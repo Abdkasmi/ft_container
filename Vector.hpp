@@ -2,10 +2,11 @@
 
 #include <iostream>
 #include <memory>
+#include "Iterator.hpp"
 
 namespace ft {
 
-		template <class T, class Alloc = allocator<T> > 
+		template <class T, class Alloc = allocator<T>>
 		class vector{
 
 			public :
@@ -43,6 +44,13 @@ namespace ft {
 			*/
 
 
+
+			private:
+
+				Alloc	_allocator;
+				size_t		size;
+
+
 		};
 
-};
+}
