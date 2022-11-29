@@ -12,11 +12,11 @@ namespace ft {
 	
 	template <class Iterator>
 	class Iterator_traits{
-		typedef Iterator::difference_type	difference_type;
-		typedef	Iterator::value_type		value_type;
-		typedef	Iterator::pointer			pointer;
-		typedef Iterator::reference			reference;
-		typedef Iterator::iterator_category	iterator_category;
+		typedef typename Iterator::difference_type	difference_type;
+		typedef	typename Iterator::value_type		value_type;
+		typedef	typename Iterator::pointer			pointer;
+		typedef typename Iterator::reference			reference;
+		typedef typename Iterator::iterator_category	iterator_category;
 	};
 
 	template <class T>
@@ -52,19 +52,26 @@ namespace ft {
 		
 		public:
 		
-			typedef Iterator							iterator_type;
-			typedef Iterator_traits<Iterator>::iterator_category	iterator_category;
-			typedef Iterator_traits<Iterator>::value_type			value_type;
-			typedef Iterator_traits<Iterator>::difference_type		difference_type;
-			typedef	Iterator_traits<Iterator>::pointer				pointer;
-			typedef Iterator_traits<Iterator>::reference			reference;
+			typedef Iterator												iterator_type;
+			typedef typename Iterator_traits<Iterator>::iterator_category	iterator_category;
+			typedef typename Iterator_traits<Iterator>::value_type			value_type;
+			typedef typename Iterator_traits<Iterator>::difference_type		difference_type;
+			typedef	typename Iterator_traits<Iterator>::pointer				pointer;
+			typedef typename Iterator_traits<Iterator>::reference			reference;
 
 
-			reverse_iterator() {};
-			explicit reverse_iterator (iterator_type it) {};
+			// Constructors
+
+			reverse_iterator(): _it() {};
+			explicit reverse_iterator (iterator_type it): _it(it) {};
 			template <class Iter>
-			reverse_iterator (const reverse_iterator<Iter>& rev_it) {};
+			reverse_iterator (const reverse_iterator<Iter>& rev_it): _it(rev_it) {};
 
+			
+
+		protected:
+
+			iterator_type	_it;
 
 	};
 
