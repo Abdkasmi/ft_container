@@ -46,20 +46,76 @@ namespace ft {
 			// Constructors
 
 			explicit vector(const allocator_type& alloc = allocator_type()): _allocator(alloc),_begin(NULL), _size(0), _lenght(0) {};
-			explicit vector(size_type n, const value_type& val = value_type(), const allocator_type& alloc = allocator_type()): _allocator(alloc), _begin(val[0]), _size(n) {
-				for (int i = 0; i < n; i++)
-					_allocator.alloc(val[i]);
-			};
+			explicit vector(size_type n, const value_type& val = value_type(), const allocator_type& alloc = allocator_type()): _allocator(alloc), _size(n), _lenght(n * 2) {
+				this->_begin = this->_allocator.allocate(this->_lenght, 0);
+				for (size_type i = 0; i < n; i++)
+					this->_allocator.construct(this->_begin + i, val);
+			}
 			template <class InputIterator>
-				vector(InputIterator first, InputIterator last, const_allocator_type& alloc = allocator_type()): _allocator(alloc), _begin(first), _size(last - first), _lenght(last - first) {
-					
-				};
-			vector(const vector& c) {};
+				vector(InputIterator first, InputIterator last, const_allocator_type& alloc = allocator_type()): _allocator(alloc), _size(last - first), _lenght((last - first) * 2) {
+					this->_begin = this->_allocator.allocate(this->_lenght, 0);
+					for (size_type i = 0; i < this->_size; i++)
+						this->_allocator.construct(this->_begin + i, *first++);
+				}
+			vector(const vector& x): _allocator(x._allocator), _size(x._size), _lenght(x._lenght) {
+				this->_begin = this->_allocator.allocate(this->_lenght, 0);
+				for (size_type i = 0; i < this->_size, i++)
+					this->_allocator.construct(this->_begin + i, *(x._begin + i));
+			}
+
+			// Destrcuctor
+
+			~vector() {
+				for (size_type i = 0; i < this->_size; i++)
+					this->_allocator.detsroy(this->_begin + i);
+				this->_allocator.dealocate(this->_begin, this->_lenght);
+			}
+
+			// Overload operator=
+
+			vector& operator= (const vector& x) {
+				// come back when have code vector::assign
+			}
+
+			// Iterators
+
+			iterator begin() {
+				return this->_begin;
+			}
+
+			iterator end() {
+				return this->_begin + this->_size;
+			}
+
+			const_iterator begin() const {
+				return this->_begin;
+			}
+
+			const_iterator end() const {
+				return this->_begin + this->_size;
+			}
+
+			reverse_iterator rbegin() {
+
+			}
+
+			reverse_iterator rend() {
+
+			}
+
+			const_reverse_iterator rbegin() {
+
+			}
+
+			const_reverse_iterator rend() {
+				
+			}
+
 
 			private:
 
 				allocator_type	_allocator;
-				pointer			_begin;
+				pointer			_begin; // pointer to the first element
 				size_type		_size; // nb of element in my vector
 				size_type		_lenght; // total lenght of my vector
 
