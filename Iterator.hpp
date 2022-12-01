@@ -87,8 +87,8 @@ namespace ft {
 					return &(operator*());
 				}
 
-				reference operator[] (difference_type n) const {
-					return this->_it[n];
+				reference operator[] (difference_type n) const {	
+						return *this->_it[n];
 				}
 
 				// Addition operator
