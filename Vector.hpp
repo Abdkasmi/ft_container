@@ -169,6 +169,7 @@ namespace ft {
 						this->_allocator.detsroy(this->_begin + i);
 					this->_allocator.dealocate(this->_begin, this->_lenght);
 					this->_begin = tmp;
+					this->_lenght = n;
 				}
 				else
 					return ;
@@ -228,8 +229,9 @@ namespace ft {
 
 			template <class InputIterator>
 				void assign(InputIterator first, InputIterator last) {
-					if (this->_begin)
-						this->_allocator.dealocate(this->_begin, this->_lenght);
+					for (size_type i = 0; i < this->_size; i++)
+						this->_allocator.destroy(this->_begin + i);
+					this->_allocator.dealocate(this->_begin, this->_lenght);
 					this->_size = last - first;
 					this->_lenght = this->_size * 2;
 					this->_begin = this->_allocator.allocate(this->_lenght, 0);
@@ -238,8 +240,9 @@ namespace ft {
 				}
 
 			void assign(size_type n, const value_type & val) {
-				if (this->_begin)
-					this->_allocator.dealocate(this->_begin, this->_lenght);
+				for (size_type i = 0; i < this->_size; i++)
+					this->_allocator.destroy(this->_begin + i);
+				this->_allocator.dealocate(this->_begin, this->_lenght);
 				this->_size = n;
 				this->_lenght = n * 2;
 				this->_begin = this->_allocator.allocate(this->_lenght, 0);
@@ -248,10 +251,35 @@ namespace ft {
 			}
 
 			void push_back(const value_type & val) {
-				if (this->_size + 1 > this->_lenght)
-					this->_begin += 
+				if (this->_size + 1 <= this->_lenght){
+					this->_allocator.construct(this->_begin + this->_size, val);
+					this->_size++;
+				}
+				else
+					resize(this->_size + 1, val);
 			}
-			// REFAIRE TOUT LES REALLOCS
+
+			void	pop_back(){
+				if (this->_size > 0) {	
+					this->_allocator.destroy(this->_begin + (this->_size - 1));
+					this->_size--;
+				}
+			}
+
+			iterator insert (iterator position, const value_type& val) {
+
+			}
+
+			void insert(iteraor position, size_type n, const value_type& val) {
+
+			}
+
+			template <class InputIterator>
+				void insert(iterator position, InputIterator first, InputIterator last) {
+
+				}
+
+			// ReCheck toutes les Exceotion safety a la fin
 
 			private:
 
