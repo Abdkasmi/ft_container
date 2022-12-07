@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <memory>
+#include <algorithm>
 #include "Iterator.hpp"
 
 namespace ft {
@@ -448,27 +449,29 @@ namespace ft {
 
 			template <class T, class Alloc>
 				bool operator== (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs) {
-					return (lhs.base() == rhs.base());
+					if (lhs.size() == rhs.size())
+						return false;
+					return std::equal(lhs.begin(), lhs.end(), rhs.begin());
 				}
 			template <class T, class Alloc>
 				bool operator!= (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs) {
-					return (lhs.base() != rhs.base());
+					return !(lhs == rhs);
 				}
 			template <class T, class Alloc>
 				bool operator<  (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs) {
-					return (lhs.base() < rhs.base());
+					return std::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
 				}
 			template <class T, class Alloc>
 				bool operator<= (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs) {
-					return (lhs.base() <= rhs.base());
+					return !(lhs < rhs);
 				}
 			template <class T, class Alloc>
 				bool operator>  (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs) {
-					return (lhs.base() > rhs.base());
+					return (lhs < rhs);
 				}
 			template <class T, class Alloc>
 				bool operator>= (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs) {
-					return (lhs.base() >= rhs.base());
+					return !(lhs > rhs);
 				}
 			
 			template <class T, class Alloc>
