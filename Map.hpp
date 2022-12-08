@@ -2,9 +2,13 @@
 
 #include <iostream>
 #include "Iterator.hpp"
+#include "Utils.hpp"
+#include "Pair.hpp"
+#include <memory>
 
 namespace ft {
 
+	template < class Key, class T, class Compare = std::less<Key>, class Alloc = std::allocator<pair<const Key, T> >>
 	class Map {
 
 		public:
@@ -19,7 +23,11 @@ namespace ft {
 		##     ## ######## ##     ## ########  ######## ##     ##       ##       ##    ##        ########
 		*/
 
-
+		typedef Key										key_type;
+		typedef T										mapped_type;
+		typedef	ft::pair<const key_type,mapped_type>	value_type;
+		typedef Compare									key_compare;
+		typedef 
 
 
 		/*
@@ -34,6 +42,5 @@ namespace ft {
 
 
 	};
-
 
 }
