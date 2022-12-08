@@ -479,8 +479,6 @@ namespace ft {
 					x.swap(y);
 				}
 
-			// ReCheck toutes les Exceotion safety a la fin
-
 			private:
 
 				allocator_type	_allocator;
