@@ -2,7 +2,7 @@
 
 #include <iostream>
 #include <memory>
-#include <algorithm>
+#include "Utils.hpp"
 #include "Iterator.hpp"
 
 namespace ft {
@@ -437,48 +437,6 @@ namespace ft {
 				return (this->_allocator);
 			}
 
-			/*
-			##    ##  #######  ##    ##         ##     ## ######## ##     ## ########  ######## ########     ######## ##     ## ##    ##  ######  ######## ####  #######  ##    ##     #######  ##     ## ######## ########  ##        #######     ###    ########
-			###   ## ##     ## ###   ##         ###   ### ##       ###   ### ##     ## ##       ##     ##    ##       ##     ## ###   ## ##    ##    ##     ##  ##     ## ###   ##    ##     ## ##     ## ##       ##     ## ##       ##     ##   ## ##   ##     ##
-			####  ## ##     ## ####  ##         #### #### ##       #### #### ##     ## ##       ##     ##    ##       ##     ## ####  ## ##          ##     ##  ##     ## ####  ##    ##     ## ##     ## ##       ##     ## ##       ##     ##  ##   ##  ##     ##
-			## ## ## ##     ## ## ## ## ####### ## ### ## ######   ## ### ## ########  ######   ########     ######   ##     ## ## ## ## ##          ##     ##  ##     ## ## ## ##    ##     ## ##     ## ######   ########  ##       ##     ## ##     ## ##     ##
-			##  #### ##     ## ##  ####         ##     ## ##       ##     ## ##     ## ##       ##   ##      ##       ##     ## ##  #### ##          ##     ##  ##     ## ##  ####    ##     ##  ##   ##  ##       ##   ##   ##       ##     ## ######### ##     ##
-			##   ### ##     ## ##   ###         ##     ## ##       ##     ## ##     ## ##       ##    ##     ##       ##     ## ##   ### ##    ##    ##     ##  ##     ## ##   ###    ##     ##   ## ##   ##       ##    ##  ##       ##     ## ##     ## ##     ##
-			##    ##  #######  ##    ##         ##     ## ######## ##     ## ########  ######## ##     ##    ##        #######  ##    ##  ######     ##    ####  #######  ##    ##     #######     ###    ######## ##     ## ########  #######  ##     ## ########
-			*/
-
-			template <class T, class Alloc>
-				bool operator== (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs) {
-					if (lhs.size() == rhs.size())
-						return false;
-					return std::equal(lhs.begin(), lhs.end(), rhs.begin());
-				}
-			template <class T, class Alloc>
-				bool operator!= (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs) {
-					return !(lhs == rhs);
-				}
-			template <class T, class Alloc>
-				bool operator<  (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs) {
-					return std::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
-				}
-			template <class T, class Alloc>
-				bool operator<= (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs) {
-					return !(lhs < rhs);
-				}
-			template <class T, class Alloc>
-				bool operator>  (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs) {
-					return (lhs < rhs);
-				}
-			template <class T, class Alloc>
-				bool operator>= (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs) {
-					return !(lhs > rhs);
-				}
-			
-			template <class T, class Alloc>
-  				void swap (vector<T,Alloc>& x, vector<T,Alloc>& y) {
-					x.swap(y);
-				}
-
 			private:
 
 				allocator_type	_allocator;
@@ -486,5 +444,47 @@ namespace ft {
 				size_type		_size; // nb of element in my vector
 				size_type		_lenght; // total lenght of my vector
 		};
+
+		/*
+		##    ##  #######  ##    ##         ##     ## ######## ##     ## ########  ######## ########     ######## ##     ## ##    ##  ######  ######## ####  #######  ##    ##     #######  ##     ## ######## ########  ##        #######     ###    ########
+		###   ## ##     ## ###   ##         ###   ### ##       ###   ### ##     ## ##       ##     ##    ##       ##     ## ###   ## ##    ##    ##     ##  ##     ## ###   ##    ##     ## ##     ## ##       ##     ## ##       ##     ##   ## ##   ##     ##
+		####  ## ##     ## ####  ##         #### #### ##       #### #### ##     ## ##       ##     ##    ##       ##     ## ####  ## ##          ##     ##  ##     ## ####  ##    ##     ## ##     ## ##       ##     ## ##       ##     ##  ##   ##  ##     ##
+		## ## ## ##     ## ## ## ## ####### ## ### ## ######   ## ### ## ########  ######   ########     ######   ##     ## ## ## ## ##          ##     ##  ##     ## ## ## ##    ##     ## ##     ## ######   ########  ##       ##     ## ##     ## ##     ##
+		##  #### ##     ## ##  ####         ##     ## ##       ##     ## ##     ## ##       ##   ##      ##       ##     ## ##  #### ##          ##     ##  ##     ## ##  ####    ##     ##  ##   ##  ##       ##   ##   ##       ##     ## ######### ##     ##
+		##   ### ##     ## ##   ###         ##     ## ##       ##     ## ##     ## ##       ##    ##     ##       ##     ## ##   ### ##    ##    ##     ##  ##     ## ##   ###    ##     ##   ## ##   ##       ##    ##  ##       ##     ## ##     ## ##     ##
+		##    ##  #######  ##    ##         ##     ## ######## ##     ## ########  ######## ##     ##    ##        #######  ##    ##  ######     ##    ####  #######  ##    ##     #######     ###    ######## ##     ## ########  #######  ##     ## ########
+		*/
+
+		template <class T, class Alloc>
+			bool operator== (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs) {
+				if (lhs.size() == rhs.size())
+					return false;
+				return ft::equal(lhs.begin(), lhs.end(), rhs.begin());
+			}
+		template <class T, class Alloc>
+			bool operator!= (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs) {
+				return !(lhs == rhs);
+			}
+		template <class T, class Alloc>
+			bool operator<  (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs) {
+				return ft::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
+			}
+		template <class T, class Alloc>
+			bool operator<= (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs) {
+				return !(lhs < rhs);
+			}
+		template <class T, class Alloc>
+			bool operator>  (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs) {
+				return (lhs < rhs);
+			}
+		template <class T, class Alloc>
+			bool operator>= (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs) {
+				return !(lhs > rhs);
+			}
+		
+		template <class T, class Alloc>
+			void swap (vector<T,Alloc>& x, vector<T,Alloc>& y) {
+				x.swap(y);
+			}
 
 }

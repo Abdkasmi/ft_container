@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include "Vector.hpp"
+#include "Utils.hpp"
 
 namespace ft {
 
@@ -72,6 +73,12 @@ namespace ft {
 				this->_container.pop_back();
 			}
 
+		protected:
+
+			container_type _container;
+
+	};
+
 			/*
 			##    ##  #######  ##    ##    ##     ## ######## ##     ## ########  ######## ########     ######## ##     ## ##    ##  ######  ######## ####  #######  ##    ##     #######  ##     ## ######## ########  ##        #######     ###    ########   ######
 			###   ## ##     ## ###   ##    ###   ### ##       ###   ### ##     ## ##       ##     ##    ##       ##     ## ###   ## ##    ##    ##     ##  ##     ## ###   ##    ##     ## ##     ## ##       ##     ## ##       ##     ##   ## ##   ##     ## ##    ##
@@ -108,13 +115,6 @@ namespace ft {
 				bool operator>= (const stack<T,Container>& lhs, const stack<T,Container>& rhs) {
 					return lhs._container >= rhs._container;
 				}
-
-
-		private:
-
-			container_type _container;
-
-	};
 
 
 }
