@@ -9,7 +9,8 @@
 namespace ft {
 
 	template < class Key, class T, class Compare = std::less<Key>, class Alloc = std::allocator<pair<const Key, T> >>
-	class Map {
+	class map {
+		
 
 		public:
 
@@ -27,7 +28,7 @@ namespace ft {
 		typedef T												mapped_type;
 		typedef ft::pair<const key_type,mapped_type>			value_type;
 		typedef Compare											key_compare;
-		// need to do value_comp not understood how to do it
+		typedef typename ft::value_comp							value_compare;
 		typedef Alloc											allocator_type;
 		typedef typename allocator_type::reference				reference;
 		typedef typename allocator_type::const_reference		const_reference;
@@ -50,7 +51,20 @@ namespace ft {
 		##     ## ######## ##     ## ########  ######## ##     ##    ##        #######  ##    ##  ######     ##    ####  #######  ##    ##  ######
 		*/
 
+		// Constructors
 
+		explicit map (const key_compare& comp = key_compare(), const allocator_type& alloc = allocator_type()): _comp(comp), _alloc(alloc) {};
+
+		template <class InputIterator>
+			map (InputIterator first, InputIterator last, const key_compare& comp = key_compare(), const allocator_type& alloc = allocator_type()): _comp(comp), _alloc(alloc) {
+				
+			}
+
+
+		private:
+
+			allocator_type	_alloc;
+			key_compare		_comp;
 	};
 
 }
