@@ -48,7 +48,7 @@ namespace ft {
             typedef std::allocator<Node<const Key, T> > Alloc;
 
             nodePtr     root;
-            nodeAlloc   alloc;
+            Alloc   alloc;
 
             RBTree(): root(NULL), alloc(NULL) {};
 
@@ -63,13 +63,59 @@ namespace ft {
                 return node;
             }
 
-            void    insert(value_type& val) {
-                if (!this->root)
+            nodePtr    insert(value_type& val) {
+                if (!this->root) {
                     this->root = NewNode(val);
-                else {
-                    
+                    this->root->color = black;
+                    return (root);
+                }
+                if (val > this->root->value)
+                    this->root->right = insert(this->root->right);
+                else if (val < this->root->value)
+                    this->root->left = insert(this->root->left);
+                balance(val);
+                return this->root;
+            }
+
+            void    balance(value_type& val) {
+                while (val->parent->color == red) {
+                    if (val->parent == val->parent->parent->right) {
+                        nodePtr uncle = val->parent->parent->left;
+                        if (uncle->color == red){
+                            uncle->color = black;
+                            val->parent->color = black;
+                            val->parent->parent->color = red;
+                        }
+                        else if (val == val->parent->left) {
+                            val = val->parent;
+                            left_rotation(val);
+                        }
+                        else {
+                            val->parent->color = black;
+                            val->parent->parent->color = red;
+                            right_rotation(val);
+                        }
+                    }
+                    else {
+                        
+                    }
                 }
             }
+
+            void    left_rotation(value_type& val) {
+                nodePtr tmp = val->parent;
+                val->parent = val;
+                val->left = tmp;
+                val = NULL;
+            }
+
+            void    right_rotation(value_type& val) {
+                nodePtr tmp = val->parent;
+                val->parent = val;
+                val->right = tmp;
+                val = NULL;
+            }
+
 
     };
 
