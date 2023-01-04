@@ -25,7 +25,7 @@ namespace ft {
             this->color = red;
         }
 
-        Node(const Node& copy): value(copy.value), color(copy.color), left(copy.left), right(copy.right), parent(copy.parent )
+        Node(const Node& copy): value(copy.value), color(copy.color), left(copy.left), right(copy.right), parent(copy.parent)
 
         ~Node() {
             std::allocator<ft::pair<const Key, T> > alloc;
@@ -47,8 +47,9 @@ namespace ft {
             typedef Node<const Key, T>* nodePtr;
             typedef std::allocator<Node<const Key, T> > Alloc;
 
+        private:
             nodePtr     root;
-            Alloc   alloc;
+            Alloc       alloc;
 
             RBTree(): root(NULL), alloc(NULL) {};
 
@@ -78,27 +79,45 @@ namespace ft {
             }
 
             void    balance(value_type& val) {
+                nodePtr uncle;
                 while (val->parent->color == red) {
                     if (val->parent == val->parent->parent->right) {
-                        nodePtr uncle = val->parent->parent->left;
+                        uncle = val->parent->parent->left;
                         if (uncle->color == red){
                             uncle->color = black;
                             val->parent->color = black;
                             val->parent->parent->color = red;
-                        }
-                        else if (val == val->parent->left) {
-                            val = val->parent;
-                            left_rotation(val);
+                            val = val->parent->parent;
                         }
                         else {
+                            if (val == val->parent->left) {
+                                val = val->parent;
+                                right_rotation(val);
+                            }
                             val->parent->color = black;
                             val->parent->parent->color = red;
-                            right_rotation(val);
+                            left_rotation(val->parent->parent);
                         }
                     }
                     else {
-                        
+                        uncle = val->parent->parent->right;
+                        if (uncle->color == red){
+                            uncle->color = black;
+                            val->parent->color = black;
+                            val->parent->parent->color = red;
+                            val = val->parent->parent;
+                        }
+                        else {
+                            if (val == val->parent->right) {
+                                val = val->parent;
+                                left_rotation(val);
+                            }
+                            val->parent->color = black;
+                            val->parent->parent->color = red;
+                            right_rotation(val->parent->parent);
+                        }
                     }
+                    this->root->color = black;
                 }
             }
 
@@ -116,7 +135,12 @@ namespace ft {
                 val = NULL;
             }
 
+            void    deleteNode(Key& key) {
+                nodePtr sibling;
+                while (val != this->root && val->color == 0) {
 
+                }
+            }
     };
 
 }
