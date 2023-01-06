@@ -7,7 +7,7 @@ NAME = container
 CPPFLAGS = -Wall -Werror -Wextra -std=c++98
 
 %.o: %.cpp
-		c++ $(CPPFLAGS) -c (SRCS)
+		c++ $(CPPFLAGS) -c $(SRCS)
 
 $(NAME) : $(OBJS)
 		c++ $(OBJS) -o $(NAME)

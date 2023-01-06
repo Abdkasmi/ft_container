@@ -76,6 +76,12 @@ namespace ft {
 			}
 
 			// Overload operators
+
+				operator reverse_iterator<const Iterator>() const
+				{
+					return this->current;
+				}
+
 				// Dereference operator
 				
 				reference operator*() const {
@@ -93,13 +99,13 @@ namespace ft {
 
 				// Addition operator
 
-				reverse_iterator operator+(difference_type n) const() {
+				reverse_iterator	 operator+(difference_type n) const() {
 					return (reverse_iterator(this->_it - n));
 				}
 
 				// Substraction operator
 
-				reverse_iterator operator-(difference_type n) const() {
+				reverse_iterator& operator-(difference_type n) const() {
 					return (reverse_iterator(this->_it + n));
 				}
 				
@@ -110,7 +116,7 @@ namespace ft {
 					return *this;
 				}
 
-				reverse_iterator	operator++(int) { // post
+				reverse_iterator	&operator++(int) { // post
 					reverse_iterator tmp = *this;
 					++(*this);
 					return tmp;

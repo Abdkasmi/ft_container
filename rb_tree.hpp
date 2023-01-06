@@ -83,11 +83,11 @@ namespace ft {
                     this->root->right = insert(this->root->right);
                 else if (val < this->root->value)
                     this->root->left = insert(this->root->left);
-                balance(val);
+                insert_balance(val);
                 return this->root;
             }
 
-            void    balance(nodePtr& val) {
+            void    insert_balance(nodePtr& val) {
                 nodePtr uncle;
                 while (val->parent->color == red) {
                     if (val->parent == val->parent->parent->right) {
@@ -142,6 +142,25 @@ namespace ft {
                 val->parent = val;
                 val->right = tmp;
                 val = NULL;
+            }
+
+            void    delete(nodePtr &val) {
+                if (val->color = red) {
+                    if (val->right == NULL && val->left == NULL)
+                        deleteNode(*val);
+                    else if (val->right == NULL) {
+                        nodePtr tmp = val->left;
+                        val->left == NULL;
+                        val = tmp;
+                    }
+                    else if (val->left == NULL) {
+                        nodePtr tmp2 = val->right;
+                        val->right == NULL;
+                        val = tmp;
+                    }
+                }
+                else
+                    balance_deleteNode(val);
             }
 
             void    balance_deleteNode(nodePtr& val) {
