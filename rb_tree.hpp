@@ -42,9 +42,9 @@ namespace ft {
     class RBTree {
         public:
 
-            typedef ft::pair<const Key, T> value_type;
+            typedef typename ft::pair<const Key, T> value_type;
 
-            typedef Node<const Key, T>* nodePtr;
+            typedef typename Node<const Key, T>* nodePtr;
             typedef std::allocator<Node<const Key, T> > Alloc;
 
         private:
@@ -64,6 +64,15 @@ namespace ft {
                 return node;
             }
 
+            void    deleteNode(nodePtr del) {
+                alloc.destroy(del);
+                alloc.deallocate(del, 1);
+            }
+
+            nodePtr     searchTree(const Key key) {
+
+            }
+
             nodePtr    insert(value_type& val) {
                 if (!this->root) {
                     this->root = NewNode(val);
@@ -78,12 +87,12 @@ namespace ft {
                 return this->root;
             }
 
-            void    balance(value_type& val) {
+            void    balance(nodePtr& val) {
                 nodePtr uncle;
                 while (val->parent->color == red) {
                     if (val->parent == val->parent->parent->right) {
                         uncle = val->parent->parent->left;
-                        if (uncle->color == red){
+                        if (uncle->color == red) {
                             uncle->color = black;
                             val->parent->color = black;
                             val->parent->parent->color = red;
@@ -121,25 +130,77 @@ namespace ft {
                 }
             }
 
-            void    left_rotation(value_type& val) {
+            void    left_rotation(nodePtr& val) {
                 nodePtr tmp = val->parent;
                 val->parent = val;
                 val->left = tmp;
                 val = NULL;
             }
 
-            void    right_rotation(value_type& val) {
+            void    right_rotation(nodePtr& val) {
                 nodePtr tmp = val->parent;
                 val->parent = val;
                 val->right = tmp;
                 val = NULL;
             }
 
-            void    deleteNode(Key& key) {
+            void    balance_deleteNode(nodePtr& val) {
                 nodePtr sibling;
-                while (val != this->root && val->color == 0) {
-
+                while (val != this->root && val->color == black) {
+                    if (val == val->parent->left) {
+                        sibling = val->parent->right;
+                        if (sibling->color = red) {
+                            sibling->color = black;
+                            val->parent->color = red;
+                            left_rotation(val->parent);
+                            sibling = val->parent->right;
+                        }
+                        if (sibling->left->color == black && sibling->right->color == black) {
+                            sibling->color = red;
+                            val = val->parent;
+                        }
+                        else {
+                            if (sibling->right->color == black) {
+                                sibling->left->color = black;
+                                sibling->color = red;
+                                right_rotation(sibling);
+                                sibling = val->parent->right;
+                            }
+                            sibling->color = val->parent->color;
+                            val->parent->color = black;
+                            sibling->right->color = black;
+                            left_rotation(val->parent);
+                            val = root;
+                        }
+                    }
+                    else {
+                        sibling = val->parent->left;
+                        if (sibling->color == red) {
+                            sibling->color = black;
+                            val->parent->color = red;
+                            right_rotation(val->parent);
+                            sibling = val->parent->left;
+                        }
+                        if (sibling->left->color == black && sibling->right->color == black) {
+                            sibling->color = red;
+                            val = val->parent;
+                        }
+                        else {
+                            if (sibling->left->color == black) {
+                                sibling->right->color = black;
+                                sibling->color = red;
+                                left_rotation(sibling);
+                                sibling = val->parent->left;
+                            }
+                            sibling->color = val->parent->color;
+                            val->parent->color = black;
+                            sibling->left->color = black;
+                            right_rotation(val->parent);
+                            val = root;    
+                        }
+                    }
                 }
+                val->color = black;
             }
     };
 

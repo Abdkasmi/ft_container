@@ -4,6 +4,7 @@
 #include "Iterator.hpp"
 #include "Utils.hpp"
 #include "Pair.hpp"
+#include "rb_tree.hpp"
 #include <memory>
 
 namespace ft {
