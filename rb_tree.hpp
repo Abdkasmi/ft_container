@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <memory>
+#include <functional>
 
 namespace ft {
 
@@ -38,7 +39,7 @@ namespace ft {
         }
     };
 
-    template<class Key, class T>
+    template<class Key, class T, class Compare = std::less<Key> >
     class RBTree {
         public:
 
@@ -47,11 +48,12 @@ namespace ft {
             typedef typename Node<const Key, T>* nodePtr;
             typedef std::allocator<Node<const Key, T> > Alloc;
 
-        private:
+        public:
             nodePtr     root;
             Alloc       alloc;
+            Compare     comp;
 
-            RBTree(): root(NULL), alloc(NULL) {};
+            RBTree(): root(NULL), alloc(NULL), _comp(NULL) {};
 
             ~RBTree() {};
 
@@ -64,26 +66,30 @@ namespace ft {
                 return node;
             }
 
-            void    deleteNode(nodePtr del) {
+            void    deallocateNode(nodePtr del) {
                 alloc.destroy(del);
+                alloc.deallocate(del->value, 1);
                 alloc.deallocate(del, 1);
-            }
-
-            nodePtr     searchTree(const Key key) {
-
+                del = NULL;
             }
 
             nodePtr    insert(value_type& val) {
                 if (!this->root) {
-                    this->root = NewNode(val);
+                    this->root = this->NewNode(val);
                     this->root->color = black;
                     return (root);
                 }
-                if (val > this->root->value)
+                if (val > this->root->value) {
+                    this->root->right = this->NewNode(val);
                     this->root->right = insert(this->root->right);
-                else if (val < this->root->value)
+                    this->root->right->parent = root;
+                }
+                else if (val < this->root->value) {
+                    this->root->left = this->NewNode(val);
                     this->root->left = insert(this->root->left);
-                insert_balance(val);
+                    this->root->left->parent = root;
+                }
+                this->insert_balance(val);
                 return this->root;
             }
 
@@ -101,11 +107,11 @@ namespace ft {
                         else {
                             if (val == val->parent->left) {
                                 val = val->parent;
-                                right_rotation(val);
+                                this->right_rotation(val);
                             }
                             val->parent->color = black;
                             val->parent->parent->color = red;
-                            left_rotation(val->parent->parent);
+                            this->left_rotation(val->parent->parent);
                         }
                     }
                     else {
@@ -119,11 +125,11 @@ namespace ft {
                         else {
                             if (val == val->parent->right) {
                                 val = val->parent;
-                                left_rotation(val);
+                                this->left_rotation(val);
                             }
                             val->parent->color = black;
                             val->parent->parent->color = red;
-                            right_rotation(val->parent->parent);
+                            this->right_rotation(val->parent->parent);
                         }
                     }
                     this->root->color = black;
@@ -144,23 +150,43 @@ namespace ft {
                 val = NULL;
             }
 
-            void    delete(nodePtr &val) {
-                if (val->color = red) {
+            void    deleteNode(const Key &key) {
+                nodePtr val = this->search(key);
+
+                if (!this->root || !val)
+                    return ;
+                if (val == root) {
+                    if (this->root->left == NULL && this->root->right == NULL){
+                        this->deallocateNode(this->root);
+                        return ;
+                    }
+                    else if (this->root->left == NULL || this->root->right == NULL) {
+                        nodePtr oldroot = this->root;
+                        this->root = (root->left == NULL) ? root->right : root left;
+                        deallocateNode(oldroot);
+                    }
+                    else {
+                        nodePtr successor = this->getSuccessor(this->root);
+                        this->root->value->first = successor->value->first;
+                        deleteNode(this->root->value->first);
+                    }
+                }
+                else if (val->color = red) {
                     if (val->right == NULL && val->left == NULL)
-                        deleteNode(*val);
+                        this->deallocate(val);
                     else if (val->right == NULL) {
                         nodePtr tmp = val->left;
-                        val->left == NULL;
+                        this->deallocateNode(val->left);
                         val = tmp;
                     }
                     else if (val->left == NULL) {
                         nodePtr tmp2 = val->right;
-                        val->right == NULL;
+                        this->deallocateNode(val->right);
                         val = tmp;
                     }
                 }
                 else
-                    balance_deleteNode(val);
+                    this->balance_deleteNode(val);
             }
 
             void    balance_deleteNode(nodePtr& val) {
@@ -171,7 +197,7 @@ namespace ft {
                         if (sibling->color = red) {
                             sibling->color = black;
                             val->parent->color = red;
-                            left_rotation(val->parent);
+                            this->left_rotation(val->parent);
                             sibling = val->parent->right;
                         }
                         if (sibling->left->color == black && sibling->right->color == black) {
@@ -182,7 +208,7 @@ namespace ft {
                             if (sibling->right->color == black) {
                                 sibling->left->color = black;
                                 sibling->color = red;
-                                right_rotation(sibling);
+                                this->right_rotation(sibling);
                                 sibling = val->parent->right;
                             }
                             sibling->color = val->parent->color;
@@ -197,7 +223,7 @@ namespace ft {
                         if (sibling->color == red) {
                             sibling->color = black;
                             val->parent->color = red;
-                            right_rotation(val->parent);
+                            this->right_rotation(val->parent);
                             sibling = val->parent->left;
                         }
                         if (sibling->left->color == black && sibling->right->color == black) {
@@ -208,18 +234,54 @@ namespace ft {
                             if (sibling->left->color == black) {
                                 sibling->right->color = black;
                                 sibling->color = red;
-                                left_rotation(sibling);
+                                this->left_rotation(sibling);
                                 sibling = val->parent->left;
                             }
                             sibling->color = val->parent->color;
                             val->parent->color = black;
                             sibling->left->color = black;
-                            right_rotation(val->parent);
+                            this->right_rotation(val->parent);
                             val = root;    
                         }
                     }
                 }
                 val->color = black;
+            }
+
+            nodePtr findMin(nodePtr cur) {
+                while (cur->left)
+                    cur = cur->left;
+                return cur;
+            }
+
+            nodePtr findMax(nodePtr cur) {
+                while (cur->right)
+                    cur = cur->right;
+                return cur;
+            }
+
+            nodePtr search(const Key& val) {
+                nodePtr tmp = this->root;
+                if (!tmp)
+                    return NULL;
+                while (tmp) {
+                    if (!this->comp(tmp->data->first, val) && tmp->left) // val is smaller
+                        tmp = tmp->left;
+                    else if (this->comp(tmp->data->first, val) && tmp->right) // val bigger
+                        tmp = tmp->right;
+                    else if (!this->comp(tmp->data->first, val) && !this->comp(val, tmp->data->first)) // equal
+                        break ;
+                    else // nil node
+                        tmp = NULL;
+                }
+                return tmp;
+            }
+
+            nodePtr getSuccessor(nodePtr root) { // get the inorder successor
+                nodePtr curr = root->right;
+                while (curr->left)
+                    curr = curr->left;
+                return curr;
             }
     };
 

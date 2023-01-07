@@ -40,7 +40,8 @@ namespace ft {
 		typedef typename ft::reverse_iterator<iterator>			reverse_iterator;
 		typedef typename ft::reverse_iterator<const_iterator>	const_reverse_iterator;
 		typedef ptrdiff_t										difference_type;
-		typedef size_t											size_type;
+		typedef size_t											size_type;	
+
 
 		/*
 		##     ## ######## ##     ## ########  ######## ########     ######## ##     ## ##    ##  ######  ######## ####  #######  ##    ##  ######
@@ -54,7 +55,7 @@ namespace ft {
 
 		// Constructors
 
-		explicit map (const key_compare& comp = key_compare(), const allocator_type& alloc = allocator_type()): _comp(comp), _alloc(alloc) {};
+		explicit map (const key_compare& comp = key_compare(), const allocator_type& alloc = allocator_type()): _comp(comp), _alloc(alloc), _tree() {};
 
 		template <class InputIterator>
 			map (InputIterator first, InputIterator last, const key_compare& comp = key_compare(), const allocator_type& alloc = allocator_type()): _comp(comp), _alloc(alloc) {
@@ -64,8 +65,9 @@ namespace ft {
 
 		private:
 
-			allocator_type	_alloc;
-			key_compare		_comp;
+			allocator_type							_alloc;
+			key_compare								_comp;
+			ft::RBTree<const key_type, mapped_type>	_tree;
 	};
 
 }
