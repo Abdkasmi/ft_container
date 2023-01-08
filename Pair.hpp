@@ -20,7 +20,7 @@ namespace ft {
         typedef T1  first_type;
         typedef T2  second_type;
 
-        T1 fist;
+        T1 first;
         T2 second;
 
         // Constructors
@@ -28,7 +28,7 @@ namespace ft {
         pair(): first(), second() {};
 
         template<class U, class V>
-            pair (const pair<U,V>& pr) {
+            pair (const pair<U,V>& p) {
                 first = p.first;
                 second = p.second;
                 return *this;

@@ -283,6 +283,10 @@ namespace ft {
                     curr = curr->left;
                 return curr;
             }
+
+            nodePtr getRoot(void) {
+                return this->root;
+            }
     };
 
 }
