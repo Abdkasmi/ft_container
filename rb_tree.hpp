@@ -287,6 +287,10 @@ namespace ft {
             nodePtr getRoot(void) {
                 return this->root;
             }
+
+            // iterator
+
+            
     };
 
 }

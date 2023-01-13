@@ -1,12 +1,12 @@
 #include <iostream>
 #include <string>
 #include <deque>
-#if 0 //CREATE A REAL STL EXAMPLE
+#if 1 //CREATE A REAL STL EXAMPLE
 	#include <map>
 	#include <stack>
 	#include <vector>
 	namespace ft = std;
-#else
+#else 0
 	#include "Map.hpp"
 	#include "Stack.hpp"
 	#include "Vector.hpp"

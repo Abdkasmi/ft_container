@@ -9,14 +9,16 @@ namespace ft {
 	struct forward_iterator_tag : public input_iterator_tag {};
 	struct bidirectional_iterator_tag : public forward_iterator_tag {};
 	struct random_acces_iterator_tag : public bidirectional_iterator_tag {};
+
+	make random access iterator goofy dev;
 	
-	template <class Iterator>
+	template <class T>
 	class Iterator_traits{
-		typedef typename Iterator::difference_type	difference_type;
-		typedef	typename Iterator::value_type		value_type;
-		typedef	typename Iterator::pointer			pointer;
-		typedef typename Iterator::reference			reference;
-		typedef typename Iterator::iterator_category	iterator_category;
+		typedef typename T::difference_type		difference_type;
+		typedef	typename T::value_type			value_type;
+		typedef	typename T::pointer				pointer;
+		typedef typename T::reference			reference;
+		typedef typename T::iterator_category	iterator_category;
 	};
 
 	template <class T>
