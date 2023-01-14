@@ -10,7 +10,7 @@ namespace ft {
 	struct bidirectional_iterator_tag : public forward_iterator_tag {};
 	struct random_acces_iterator_tag : public bidirectional_iterator_tag {};
 
-	make random access iterator goofy dev;
+	//make random access iterator goofy dev;
 	
 	template <class T>
 	class Iterator_traits{

@@ -20,11 +20,11 @@ namespace ft {
 			typedef	typename Iterator_traits<T>::pointer				        pointer;
 			typedef typename Iterator_traits<T>::reference			            reference;
 
-            typedef typename Node<const Key, T>* nodePtr;
+            typedef typename ft::Node<const Key, T>*                            nodePtr;
             
             RbtIterator(): _node(NULL), _end(NULL) {};
 
-            RbtIterator(nodePtr node): _node(node), end(NULL) {};
+            RbtIterator(nodePtr node): _node(node), _end(NULL) {};
 
             RbtIterator(nodePtr node, nodePtr end): _node(node), _end(end) {};
 
@@ -40,7 +40,7 @@ namespace ft {
                 nodePtr p;
                 if (this->_node == NULL) { // if !node => trying ++ from end(), we go to the root
                     this->_end = this->_node;
-                    this->_node = ft::RBTree::getRoot();
+                    this->_node = ft::RBTree<const Key, T>::getRoot();
                     if (this->_node == NULL) // tree is empty
                         throw UnderflowException();
                     while (this->_node->left) // go to the smallest value in the tree (first inorder node)
@@ -73,9 +73,30 @@ namespace ft {
             }
 
             RbtIterator &operator--() { // --it
-                if (this->_node = NULL_) {
-                    
+                nodePtr p;
+                if (this->_node == NULL_) { // if _node == NULL trying to -- from root, we go to root
+                    this->_end = this->_node;
+                    this->_node = ft::RBTree<const Key, T>::getRoot();
+                    if (this->_node == NULL) // tree is empty
+                        throw UnderflowException();
+                    this->_node = ft::RBTree::findMax(this->_node); // get biggest value
                 }
+                else {
+                    if (this->_node->left) {
+                        this->_node = this->_node->left; // looking for next successor
+                        while (this->_node->right)
+                            this->_node = this->_node->left;
+                    }
+                    else {
+                        p = this->_node->parent;
+                        while (p && this->_node = p->left) {
+                            this->_node = p;
+                            p = p->parent;
+                        }
+                        this->_node = p;
+                    }
+                }
+                return *this;
             }
 
             RbtIterator operator--(int) { // it--
