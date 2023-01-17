@@ -13,14 +13,16 @@ namespace ft {
 
         public :
 
-            typedef Key                                                         key_type;
-			typedef typename ft::bidirectional_iterator_tag	                    iterator_category;
-			typedef typename Iterator_traits<T>::value_type			            value_type;
-			typedef typename Iterator_traits<T>::difference_type		        difference_type;
-			typedef	typename Iterator_traits<T>::pointer				        pointer;
-			typedef typename Iterator_traits<T>::reference			            reference;
+            typedef Key                                                             key_type;
+			typedef typename ft::bidirectional_iterator_tag	                        iterator_category;
+            typedef typename ft::iterator<ft::bidirectional_iterator_tag, T>        iterator;
+            typedef typename ft::iterator<ft::bidirectional_iterator_tag, const T>  const_iterator;
+			typedef typename Iterator_traits<T>::value_type			                value_type;
+			typedef typename Iterator_traits<T>::difference_type		            difference_type;
+			typedef	typename Iterator_traits<T>::pointer				            pointer;
+			typedef typename Iterator_traits<T>::reference			                reference;
 
-            typedef typename ft::Node<const Key, T>*                            nodePtr;
+            typedef typename ft::Node<const Key, T>*                                nodePtr;
             
             RbtIterator(): _node(NULL), _end(NULL) {};
 
@@ -74,11 +76,11 @@ namespace ft {
 
             RbtIterator &operator--() { // --it
                 nodePtr p;
-                if (this->_node == NULL_) { // if _node == NULL trying to -- from root, we go to root
+                if (this->_node == NULL) { // if _node == NULL trying to -- from root, we go to root
                     this->_end = this->_node;
                     this->_node = ft::RBTree<const Key, T>::getRoot();
                     if (this->_node == NULL) // tree is empty
-                        throw UnderflowException();
+                        throw std::underflow_error("Underflow caught");
                     this->_node = ft::RBTree::findMax(this->_node); // get biggest value
                 }
                 else {

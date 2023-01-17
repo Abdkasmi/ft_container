@@ -6,7 +6,7 @@
 	#include <stack>
 	#include <vector>
 	namespace ft = std;
-#else 0
+#else
 	#include "Map.hpp"
 	#include "Stack.hpp"
 	#include "Vector.hpp"

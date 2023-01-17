@@ -8,7 +8,7 @@ namespace ft {
 	struct output_iterator_tag {};
 	struct forward_iterator_tag : public input_iterator_tag {};
 	struct bidirectional_iterator_tag : public forward_iterator_tag {};
-	struct random_acces_iterator_tag : public bidirectional_iterator_tag {};
+	struct random_access_iterator_tag : public bidirectional_iterator_tag {};
 
 	//make random access iterator goofy dev;
 	
@@ -27,7 +27,7 @@ namespace ft {
 		typedef	T							value_type;
 		typedef	T*							pointer;
 		typedef T&							reference;
-		typedef random_acces_iterator_tag	iterator_category;
+		typedef random_access_iterator_tag	iterator_category;
 	};
 
 	template <class T>
@@ -36,7 +36,7 @@ namespace ft {
 		typedef	T							value_type;
 		typedef	const T*					pointer;
 		typedef const T&					reference;
-		typedef random_acces_iterator_tag	iterator_category;
+		typedef random_access_iterator_tag	iterator_category;
 	};
 
 
@@ -48,6 +48,10 @@ namespace ft {
 		typedef Reference	reference;
 		typedef Category	iterator_category;
 	};
+
+
+			// Reverse Iterator
+
 
 	template <class Iterator>
 	class reverse_iterator {
@@ -202,5 +206,14 @@ namespace ft {
 			iterator_type	_it;
 
 	};
+
+		// Random Access Iterator
+
+
+	// template<typename T>
+	// class random_access_iterator {
+
+	// };
+
 
 }

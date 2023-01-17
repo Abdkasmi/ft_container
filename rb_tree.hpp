@@ -4,7 +4,9 @@
 #include <memory>
 #include <functional>
 #include "Utils.hpp"
-#include "rbt_iterator.hpp"
+#include "Pair.hpp"
+#include "Iterator.hpp"
+
 
 namespace ft {
 
@@ -28,7 +30,7 @@ namespace ft {
             this->color = red;
         }
 
-        Node(const Node& copy): value(copy.value), color(copy.color), left(copy.left), right(copy.right), parent(copy.parent)
+        Node(const Node& copy): value(copy.value), color(copy.color), left(copy.left), right(copy.right), parent(copy.parent) {};
 
         ~Node() {
             std::allocator<ft::pair<const Key, T> > alloc;
@@ -47,15 +49,19 @@ namespace ft {
 
             typedef typename ft::pair<const Key, T> value_type;
 
-            typedef typename Node<const Key, T>* nodePtr;
+            typedef typename ft::Node<const Key, T>* nodePtr;
             typedef std::allocator<Node<const Key, T> > Alloc;
+            typedef typename ft::iterator<ft::bidirectional_iterator_tag, T>               iterator;
+            typedef typename ft::iterator<ft::bidirectional_iterator_tag, const T>         const_iterator;
+            typedef typename ft::reverse_iterator<iterator>                                reverse_iterator;
+            typedef typename ft::reverse_iterator<const_iterator>                          const_reverse_iterator;
 
         public:
             nodePtr     root;
             Alloc       alloc;
             Compare     comp;
 
-            RBTree(): root(NULL), alloc(NULL), _comp(NULL) {};
+            RBTree(): root(NULL), alloc(NULL), comp(NULL) {};
 
             ~RBTree() {};
 
@@ -164,7 +170,7 @@ namespace ft {
                     }
                     else if (this->root->left == NULL || this->root->right == NULL) {
                         nodePtr oldroot = this->root;
-                        this->root = (root->left == NULL) ? root->right : root left;
+                        this->root = (root->left == NULL) ? root->right : root->left;
                         deallocateNode(oldroot);
                     }
                     else {
@@ -173,7 +179,7 @@ namespace ft {
                         deleteNode(this->root->value->first);
                     }
                 }
-                else if (val->color = red) {
+                else if (val->color == red) {
                     if (val->right == NULL && val->left == NULL)
                         this->deallocate(val);
                     else if (val->right == NULL) {
@@ -184,7 +190,7 @@ namespace ft {
                     else if (val->left == NULL) {
                         nodePtr tmp2 = val->right;
                         this->deallocateNode(val->right);
-                        val = tmp;
+                        val = tmp2;
                     }
                 }
                 else
@@ -196,7 +202,7 @@ namespace ft {
                 while (val != this->root && val->color == black) {
                     if (val == val->parent->left) {
                         sibling = val->parent->right;
-                        if (sibling->color = red) {
+                        if (sibling->color == red) {
                             sibling->color = black;
                             val->parent->color = red;
                             this->left_rotation(val->parent);
@@ -250,6 +256,20 @@ namespace ft {
                 val->color = black;
             }
 
+            void clear() {
+                nodePtr max = findMax(this->_root);
+
+                while (max != this->_root) {
+                    deleteNode(max->value->first);
+                    max--;
+                }
+                if (max == this->_root && this->_root) {
+                    deleteNode(this->_root->value->first);
+                    this->_root = NULL;
+                    deleteNode(max->value->first);
+                }
+            }
+
             nodePtr findMin(nodePtr cur) {
                 while (cur->left)
                     cur = cur->left;
@@ -279,6 +299,19 @@ namespace ft {
                 return tmp;
             }
 
+            value_type& search(iterator position) {
+                iterator it = this->begin();
+                nodePtr tmp = this->_root;
+
+                while (it != this->end()) {
+                    if (it == position)
+                        return *tmp->value;
+                    it++;
+                    tmp++;
+                }
+                return *tmp->value;
+            }
+
             nodePtr getSuccessor(nodePtr root) { // get the inorder successor
                 nodePtr curr = root->right;
                 while (curr->left)
@@ -301,8 +334,30 @@ namespace ft {
                 return last->right;
             }
 
-            
+            const_iterator begin() const {
+                return findMin(this->root);
+            }
 
+            const_iterator end() const {
+                nodePtr last = findMax(this->root);
+                return last->right;
+            }
+
+            reverse_iterator rbegin() {
+                return reverse_iterator(this->end());
+            }
+
+            const_reverse_iterator rbegin() const {
+                return reverse_iterator(this->end());
+            }
+
+            reverse_iterator rend() {
+                return reverse_iterator(this->begin());
+            }
+            
+            const_reverse_iterator rend() const {
+                return reverse_iterator(this->begin());
+            }
 
     };
 

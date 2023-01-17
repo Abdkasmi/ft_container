@@ -21,18 +21,18 @@ namespace ft {
 			##     ## ######## ##     ## ########  ######## ##     ##       ##       ##    ##        ########
 			*/
 				
-				typedef T												value_type;
-				typedef Alloc											allocator_type;
-				typedef typename allocator_type::reference				reference;
-				typedef typename allocator_type::const_reference		const_reference;
-				typedef typename allocator_type::pointer 				pointer;
-				typedef typename allocator_type::const_pointer 			const_pointer;
-				typedef typename ft::random_access_iterator<T>			iterator;
-				typedef typename ft::random_access_iterator<const T>	const_iterator;
-				typedef typename ft::reverse_iterator<iterator>			reverse_iterator;
-				typedef typename ft::reverse_iterator<const iterator>	const_reverse_iterator;
-				typedef std::ptrdiff_t									difference_type;
-				typedef std::size_t										size_type;
+				typedef T																value_type;
+				typedef Alloc															allocator_type;
+				typedef typename allocator_type::reference								reference;
+				typedef typename allocator_type::const_reference						const_reference;
+				typedef typename allocator_type::pointer 								pointer;
+				typedef typename allocator_type::const_pointer 							const_pointer;
+				typedef typename ft::iterator<ft::random_access_iterator_tag, T>		iterator;
+				typedef typename ft::iterator<ft::random_access_iterator_tag, const T>	const_iterator;
+				typedef typename ft::reverse_iterator<iterator>							reverse_iterator;
+				typedef typename ft::reverse_iterator<const_iterator>					const_reverse_iterator;
+				typedef std::ptrdiff_t													difference_type;
+				typedef std::size_t														size_type;
 						
 			/*
 			##     ## ######## ##     ## ########  ######## ########     ######## ##     ## ##    ##  ######  ######## ####  #######  ##    ##  ######
@@ -53,7 +53,7 @@ namespace ft {
 					this->_allocator.construct(this->_begin + i, val);
 			}
 			template <class InputIterator>
-				vector(InputIterator first, InputIterator last, const_allocator_type& alloc = allocator_type()): _allocator(alloc), _size(last - first), _lenght((last - first) * 2) {
+				vector(InputIterator first, InputIterator last, const allocator_type& alloc = allocator_type()): _allocator(alloc), _size(last - first), _lenght((last - first) * 2) {
 					this->_begin = this->_allocator.allocate(this->_lenght, 0);
 					for (size_type i = 0; i < this->_size; i++)
 						this->_allocator.construct(this->_begin + i, *first++);
@@ -161,7 +161,7 @@ namespace ft {
 				return !this->_size;
 			}
 
-			void reserve(type_type n) {
+			void reserve(size_type n) {
 				if (n > max_size())
 					throw std::length_error("vector::reserve");
 				if (n > this->_lenght) {
@@ -218,7 +218,7 @@ namespace ft {
 				return *this->_begin + (this->_size - 1);
 			}
 
-			const_reference back() {
+			const_reference back() const {
 				return *this->_begin + (this->_size - 1);
 			}
 
@@ -294,7 +294,7 @@ namespace ft {
 				return (it);
 			}
 
-			void insert(iteraor position, size_type n, const value_type& val) {
+			void insert(iterator position, size_type n, const value_type& val) {
 				size_type i = 0, k = 0;
 				pointer tmp = this->_allocator.allocate((this->_size + n) * 2);
 				iterator it = this->_begin;
@@ -397,7 +397,7 @@ namespace ft {
 				this->_begin = tmp;
 				this->_size -= (last - first);
 				this->_lenght = this->_size * 2;
-				return it
+				return it;
 			}
 
 			void swap(vector& x) {
