@@ -43,6 +43,8 @@ namespace ft {
 		typedef ptrdiff_t										difference_type;
 		typedef size_t											size_type;
 
+		typedef typename ft::Node<const Key, T>* 				nodePtr;
+
 		/*
 		##     ## ######## ##     ## ########  ######## ########     ######## ##     ## ##    ##  ######  ######## ####  #######  ##    ##  ######
 		###   ### ##       ###   ### ##     ## ##       ##     ##    ##       ##     ## ###   ## ##    ##    ##     ##  ##     ## ###   ## ##    ##
@@ -290,11 +292,64 @@ namespace ft {
 		*/
 
 		iterator find(const key_type& k) {
-		
+			iterator it = this->begin();
+			nodePtr tmp = this->_tree.getRoot;
+
+			while (it != this->end()) {
+				if (it == position)
+					return it;
+				it++;
+				tmp++;
+			}
+			return this->end();
 		}
 
 		const_iterator find(const key_type& k) const {
+			return this->find(k);
+		}
 
+		size_type count(const key_type& k) const {
+			if (this->_tree.search(k))
+				return 1;
+			return 0;
+		}
+
+		iterator lower_bound(const key_type& k) {
+
+		}
+
+		const_iterator lower_bound(const key_type& k) const {
+
+		}
+
+		iterator upper_bound(const key_type& k) {
+
+		}
+
+		const_iterator upper_bound(const key_type& k) const {
+
+		}
+
+		pair<iterator, iterator> equal_range(const key_type& k) {
+			
+		}
+
+		pair<const_iterator, const_iterator> equal_range(const key_type& k) const {
+
+		}
+
+		/*
+		   ###    ##       ##        #######   ######     ###    ########  #######  ########
+		  ## ##   ##       ##       ##     ## ##    ##   ## ##      ##    ##     ## ##     ##
+		 ##   ##  ##       ##       ##     ## ##        ##   ##     ##    ##     ## ##     ##
+		##     ## ##       ##       ##     ## ##       ##     ##    ##    ##     ## ########
+		######### ##       ##       ##     ## ##       #########    ##    ##     ## ##   ##
+		##     ## ##       ##       ##     ## ##    ## ##     ##    ##    ##     ## ##    ##
+		##     ## ######## ########  #######   ######  ##     ##    ##     #######  ##     ##
+		*/
+
+		allocator_type get_allocator() const {
+			return this->_alloc;
 		}
 
 		private:

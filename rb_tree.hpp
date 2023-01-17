@@ -299,6 +299,23 @@ namespace ft {
                 return tmp;
             }
 
+            iterator search(const Key& val) {
+                nodePtr tmp = this->root;
+                if (!tmp)
+                    return NULL;
+                while (tmp) {
+                    if (!this->comp(tmp->data->first, val) && tmp->left) // val is smaller
+                        tmp = tmp->left;
+                    else if (this->comp(tmp->data->first, val) && tmp->right) // val bigger
+                        tmp = tmp->right;
+                    else if (!this->comp(tmp->data->first, val) && !this->comp(val, tmp->data->first)) // equal
+                        break ;
+                    else // nil node
+                        tmp = NULL;
+                }
+                return tmp;
+            }
+
             value_type& search(iterator position) {
                 iterator it = this->begin();
                 nodePtr tmp = this->_root;
