@@ -61,7 +61,7 @@ namespace ft {
             Alloc       alloc;
             Compare     comp;
 
-            RBTree(): root(NULL), alloc(NULL), comp(NULL) {};
+            RBTree(): root(NULL), alloc(NULL), comp() {};
 
             ~RBTree() {};
 
@@ -257,7 +257,7 @@ namespace ft {
             }
 
             void clear() {
-                nodePtr max = findMax(this->_root);
+                nodePtr max = findMax(this->root);
 
                 while (max != this->_root) {
                     deleteNode(max->value->first);
@@ -299,7 +299,7 @@ namespace ft {
                 return tmp;
             }
 
-            iterator search(const Key& val) {
+            iterator search_it(const Key& val) {
                 nodePtr tmp = this->root;
                 if (!tmp)
                     return NULL;

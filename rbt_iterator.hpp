@@ -44,7 +44,7 @@ namespace ft {
                     this->_end = this->_node;
                     this->_node = ft::RBTree<const Key, T>::getRoot();
                     if (this->_node == NULL) // tree is empty
-                        throw UnderflowException();
+                        throw std::underflow_error("Underflow error !");
                     while (this->_node->left) // go to the smallest value in the tree (first inorder node)
                         this->_node = this->_node->left;
                 }
@@ -57,7 +57,7 @@ namespace ft {
                     else { // we went already through the left-subtree and there is no right-subtree => we move up looking for a P for wich _node is a left child
                            // A non NULL P is the successor, if P is NULL the successor is the end
                         p = this->_node->parent;
-                        while (p && this->_node = p->right) {
+                        while (p && this->_node == p->right) {
                             this->_node = p;
                             p = p->parent;
                         }
@@ -81,7 +81,7 @@ namespace ft {
                     this->_node = ft::RBTree<const Key, T>::getRoot();
                     if (this->_node == NULL) // tree is empty
                         throw std::underflow_error("Underflow caught");
-                    this->_node = ft::RBTree::findMax(this->_node); // get biggest value
+                    this->_node = ft::RBTree<const Key, T>::findMax(this->_node); // get biggest value
                 }
                 else {
                     if (this->_node->left) {
@@ -91,7 +91,7 @@ namespace ft {
                     }
                     else {
                         p = this->_node->parent;
-                        while (p && this->_node = p->left) {
+                        while (p && this->_node == p->left) {
                             this->_node = p;
                             p = p->parent;
                         }

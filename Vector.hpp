@@ -47,17 +47,27 @@ namespace ft {
 			// Constructors
 
 			explicit vector(const allocator_type& alloc = allocator_type()): _allocator(alloc),_begin(NULL), _size(0), _lenght(0) {};
+			
 			explicit vector(size_type n, const value_type& val = value_type(), const allocator_type& alloc = allocator_type()): _allocator(alloc), _size(n), _lenght(n * 2) {
 				this->_begin = this->_allocator.allocate(this->_lenght, 0);
 				for (size_type i = 0; i < n; i++)
 					this->_allocator.construct(this->_begin + i, val);
 			}
+
 			template <class InputIterator>
-				vector(InputIterator first, InputIterator last, const allocator_type& alloc = allocator_type()): _allocator(alloc), _size(last - first), _lenght((last - first) * 2) {
+				vector(InputIterator first, InputIterator last, const allocator_type& alloc = allocator_type()): _allocator(alloc) {
+					size_t i = 0
+					while (first != last) {
+						*first++;
+						i++;
+					}
+					this->_size = i;
+					this->_lenght = i * 2;
 					this->_begin = this->_allocator.allocate(this->_lenght, 0);
 					for (size_type i = 0; i < this->_size; i++)
 						this->_allocator.construct(this->_begin + i, *first++);
 				}
+			
 			vector(const vector& x): _allocator(x._allocator), _size(x._size), _lenght(x._lenght) {
 				this->_begin = this->_allocator.allocate(this->_lenght, 0);
 				for (size_type i = 0; i < this->_size; i++)
@@ -68,14 +78,16 @@ namespace ft {
 
 			~vector() {
 				for (size_type i = 0; i < this->_size; i++)
-					this->_allocator.detsroy(this->_begin + i);
-				this->_allocator.dealocate(this->_begin, this->_lenght);
+					this->_allocator.destroy(this->_begin + i);
+				this->_allocator.deallocate(this->_begin, this->_lenght);
 			}
 
 			// Overload operator=
 
 			vector& operator= (const vector& x) {
-				// come back when have code vector::assign
+				if (this != &x)
+					this->assign(x.begin(), x.end());
+				return *this;
 			}
 
 			// Iterators
@@ -138,16 +150,22 @@ namespace ft {
 				else if (n > this->_size) {
 					if (n + this->_size <= this->_lenght) {
 						for (size_type i = this->_size; i < this->_size + n; i++) {
-							this->_allocator.allocator.construct(this->_begin + i, val);
+							this->_allocator.construct(this->_begin + i, val);
 						}
 					}
 					else if (n + this->_size > this->_lenght) {
 						size_type tmp = this->_lenght;
-						this->_lenght *= 2;
-						this->_begin += this->_allocator.allocate(this->_lenght - tmp, 0);
-						for (size_type i = this->_size; i < this->_size + n; i++) {
-							this->_allocator.allocator.construct(this->_begin + i, val);
+						this->_lenght = n + this->_size * 2;
+						pointer	tmp2;
+						tmp2 = this->_allocator.allocate(this->_lenght, 0);
+						for (size_type i = 0; i < this->_size; i++) {
+							this->_allocator.construct(tmp2 + i, this->_begin + i);
 						}
+						for (size_type i = this->_size; i < this->_size + n; i++) {
+							this->_allocator.construct(tmp2 + i, val);
+						}
+						this->_begin = tmp2;
+						this->_size += n;
 					}
 				}
 				this->_size = n;
@@ -169,8 +187,8 @@ namespace ft {
 					for (size_type i = 0; i < n; i++)
 						this->_allocator.construct(tmp + i, this->_begin + i);
 					for (size_type i = 0; i < this->_size; i++)
-						this->_allocator.detsroy(this->_begin + i);
-					this->_allocator.dealocate(this->_begin, this->_lenght);
+						this->_allocator.destroy(this->_begin + i);
+					this->_allocator.deallocate(this->_begin, this->_lenght);
 					this->_begin = tmp;
 					this->_lenght = n;
 				}
@@ -236,7 +254,7 @@ namespace ft {
 				void assign(InputIterator first, InputIterator last) {
 					for (size_type i = 0; i < this->_size; i++)
 						this->_allocator.destroy(this->_begin + i);
-					this->_allocator.dealocate(this->_begin, this->_lenght);
+					this->_allocator.deallocate(this->_begin, this->_lenght);
 					this->_size = last - first;
 					this->_lenght = this->_size * 2;
 					this->_begin = this->_allocator.allocate(this->_lenght, 0);

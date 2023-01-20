@@ -8,7 +8,7 @@ namespace ft {
 
 	template <class T, class Container = ft::vector<T> >
 	class stack {
-
+		
 		public:
 
 		/*
@@ -25,6 +25,10 @@ namespace ft {
 			typedef Container	container_type;
 			typedef size_t		size_type;
 
+		protected:
+
+			container_type _container;
+
 		/*
 		##     ## ######## ##     ## ########  ######## ########     ######## ##     ## ##    ##  ######  ######## ####  #######  ##    ##  ######
 		###   ### ##       ###   ### ##     ## ##       ##     ##    ##       ##     ## ###   ## ##    ##    ##     ##  ##     ## ###   ## ##    ##
@@ -35,9 +39,11 @@ namespace ft {
 		##     ## ######## ##     ## ########  ######## ##     ##    ##        #######  ##    ##  ######     ##    ####  #######  ##    ##  ######
 		*/
 
+		public:
+
 			// Constructor
 
-			explicit stack(const conatiner_type& ctnr = container_type()): _container(ctnr) {};
+			explicit stack(const container_type& ctnr = container_type()): _container(ctnr) {};
 
 			// Empty
 
@@ -48,17 +54,17 @@ namespace ft {
 			// Size
 
 			size_type size() const {
-				return _constainer.size();
+				return this->_container.size();
 			}
 
 			// Top
 
 			value_type& top() {
-				return _container.back();
+				return this->_container.back();
 			}
 
-			const value_type& top const() {
-				return _container.back();
+			const value_type& top() const {
+				return this->_container.back();
 			}
 
 			// Push
@@ -72,10 +78,6 @@ namespace ft {
 			void pop() {
 				this->_container.pop_back();
 			}
-
-		protected:
-
-			container_type _container;
 
 	};
 
