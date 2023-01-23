@@ -27,8 +27,8 @@ namespace ft {
 				typedef typename allocator_type::const_reference						const_reference;
 				typedef typename allocator_type::pointer 								pointer;
 				typedef typename allocator_type::const_pointer 							const_pointer;
-				typedef typename ft::iterator<ft::random_access_iterator_tag, T>		iterator;
-				typedef typename ft::iterator<ft::random_access_iterator_tag, const T>	const_iterator;
+				typedef typename ft::random_access_iterator<T>							iterator;
+				typedef typename ft::random_access_iterator<const T>					const_iterator;
 				typedef typename ft::reverse_iterator<iterator>							reverse_iterator;
 				typedef typename ft::reverse_iterator<const_iterator>					const_reverse_iterator;
 				typedef std::ptrdiff_t													difference_type;
@@ -56,16 +56,17 @@ namespace ft {
 
 			template <class InputIterator>
 				vector(InputIterator first, InputIterator last, const allocator_type& alloc = allocator_type()): _allocator(alloc) {
-					size_t i = 0
+					size_t i = 0;
 					while (first != last) {
-						*first++;
+						first++;
 						i++;
 					}
 					this->_size = i;
 					this->_lenght = i * 2;
 					this->_begin = this->_allocator.allocate(this->_lenght, 0);
-					for (size_type i = 0; i < this->_size; i++)
-						this->_allocator.construct(this->_begin + i, *first++);
+					for (size_type i = 0; i < this->_size; i++) {
+						this->_allocator.construct(this->_begin + i, (*first)++);
+					}
 				}
 			
 			vector(const vector& x): _allocator(x._allocator), _size(x._size), _lenght(x._lenght) {
@@ -154,7 +155,6 @@ namespace ft {
 						}
 					}
 					else if (n + this->_size > this->_lenght) {
-						size_type tmp = this->_lenght;
 						this->_lenght = n + this->_size * 2;
 						pointer	tmp2;
 						tmp2 = this->_allocator.allocate(this->_lenght, 0);
@@ -207,11 +207,11 @@ namespace ft {
 			*/
 
 			reference operator[](size_type n) {
-				return *this->_begin + n;
+				return *(this->_begin + n);
 			}
 
 			const_reference operator[](size_type n) const {
-				return *this->_begin + n;
+				return *(this->_begin + n);
 			}
 
 			reference at(size_type n) {
@@ -279,7 +279,7 @@ namespace ft {
 					this->_size++;
 				}
 				else
-					resize(this->_size + 1, val);
+					this->resize(this->_size + 1, val);
 			}
 
 			void	pop_back(){
@@ -484,7 +484,7 @@ namespace ft {
 				return !(lhs == rhs);
 			}
 		template <class T, class Alloc>
-			bool operator<  (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs) {
+			bool operator< (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs) {
 				return ft::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
 			}
 		template <class T, class Alloc>

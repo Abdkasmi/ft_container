@@ -1,6 +1,9 @@
 #include <iostream>
 #include <string>
-#include <deque>
+#include "Iterator.hpp"
+#include "Pair.hpp"
+#include "Utils.hpp"
+
 #if 0 //CREATE A REAL STL EXAMPLE
 	#include <map>
 	#include <stack>
