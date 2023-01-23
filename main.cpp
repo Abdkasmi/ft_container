@@ -1,8 +1,5 @@
 #include <iostream>
 #include <string>
-#include "Iterator.hpp"
-#include "Pair.hpp"
-#include "Utils.hpp"
 
 #if 0 //CREATE A REAL STL EXAMPLE
 	#include <map>
@@ -26,30 +23,40 @@ int main() {
 	ft::vector<int> vector4(vector3); // copy of 3
 
 	std::cout << "empty vector : " << vector.empty() << std::endl;
-	for (int i = 0; i < 4; i++)
-		std::cout<< "vector through index : " << vector2[i] << " ";
+	for (int i = 0; i < 5; i++)
+		std::cout<< "vector2 through index : " << vector2[i] << " | ";
+	std::cout << std::endl;
 	std::cout << std::endl;
 	ft::vector<int>::iterator it(vector3.begin());
 	while (it != vector3.end()) {
-		std::cout << "vector through iterator : " << *it++ << " ";
+		std::cout << "vector3 through iterator : " << *it++ << " | ";
 	}
+	std::cout << std::endl;
 	std::cout << std::endl;
 	it = vector4.begin();
 	while (it != vector4.end()) {
-		std::cout << "vector through iterator : " << *it++ << " ";
+		std::cout << "vector4 through iterator : " << *it++ << " | ";
 	}
 	std::cout << std::endl;
+	std::cout << std::endl;
 	vector4.push_back(13);
-	std::cout << "vector push_back : " << ++*it << std::endl;
+	it = vector4.begin();
+	while (it != vector4.end()) {
+		std::cout << "vector4 after push_back : " << *it++ << " | ";
+	}
+	std::cout << std::endl;
+	std::cout << std::endl;
 	vector4.pop_back();
 	it = vector4.begin();
 	while (it != vector4.end()) {
-		std::cout << "vector after pop_back : " << *it++ << " ";
+		std::cout << "vector after pop_back : " << *it++ << " | ";
 	}
 	std::cout << std::endl;
+	std::cout << std::endl;
+	vector.push_back(56);
 	if (vector.empty())
-		std::cout << "Vector is empty" << std::endl;
+		std::cout << "Vector1 is empty" << std::endl;
 	else
-		std::cout << "Vector has size of " << vector4.size() << std::endl;
+		std::cout << "Vector1 is not empty" << std::endl;
 	return 0;
 }
