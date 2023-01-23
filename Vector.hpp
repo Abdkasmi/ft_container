@@ -65,7 +65,7 @@ namespace ft {
 					this->_lenght = i * 2;
 					this->_begin = this->_allocator.allocate(this->_lenght, 0);
 					for (size_type i = 0; i < this->_size; i++) {
-						this->_allocator.construct(this->_begin + i, (*first)++);
+						this->_allocator.construct(this->_begin + i, *first++);
 					}
 				}
 			
@@ -159,7 +159,7 @@ namespace ft {
 						pointer	tmp2;
 						tmp2 = this->_allocator.allocate(this->_lenght, 0);
 						for (size_type i = 0; i < this->_size; i++) {
-							this->_allocator.construct(tmp2 + i, this->_begin + i);
+							this->_allocator.construct(tmp2 + i, *(this->_begin + i));
 						}
 						for (size_type i = this->_size; i < this->_size + n; i++) {
 							this->_allocator.construct(tmp2 + i, val);
