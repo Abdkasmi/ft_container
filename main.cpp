@@ -23,7 +23,7 @@ int main() {
 	ft::vector<int> vector4(vector3); // copy of 3
 
 	std::cout << "empty vector : " << vector.empty() << std::endl;
-	for (int i = 0; i < 5; i++)
+	for (size_t i = 0; i < vector2.size(); i++)
 		std::cout<< "vector2 through index : " << vector2[i] << " | ";
 	std::cout << std::endl;
 	std::cout << std::endl;
@@ -58,5 +58,9 @@ int main() {
 		std::cout << "Vector1 is empty" << std::endl;
 	else
 		std::cout << "Vector1 is not empty" << std::endl;
+	std::cout << "////////-- Map -- ////////" << std::endl;
+	std::cout << std::endl;
+	ft::map<int, std::string> first;
+	first[0] = "salut";
 	return 0;
 }

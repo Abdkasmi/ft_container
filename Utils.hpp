@@ -55,32 +55,6 @@ namespace ft {
         }
 
     /*
-    ##     ##    ###    ##       ##     ## ########          ######   #######  ##     ## ########
-    ##     ##   ## ##   ##       ##     ## ##               ##    ## ##     ## ###   ### ##     ##
-    ##     ##  ##   ##  ##       ##     ## ##               ##       ##     ## #### #### ##     ##
-    ##     ## ##     ## ##       ##     ## ######           ##       ##     ## ## ### ## ########
-     ##   ##  ######### ##       ##     ## ##               ##       ##     ## ##     ## ##
-      ## ##   ##     ## ##       ##     ## ##               ##    ## ##     ## ##     ## ##
-       ###    ##     ## ########  #######  ######## #######  ######   #######  ##     ## ##
-    */
-
-    // template <class Key, class T, class Compare, class Alloc>
-    // class map : public binary_function<std::false,value_type,bool> {
-    //     friend class map;
-    //     protected:
-    //     Compare comp;
-    //     value_compare (Compare c) : comp(c) {}
-    //     public:
-    //     typedef bool result_type;
-    //     typedef value_type first_argument_type;
-    //     typedef value_type second_argument_type;
-    //     bool operator() (const value_type& x, const value_type& y) const
-    //     {
-    //         return comp(x.first, y.first);
-    //     }
-    // };
-
-    /*
     ######## ##    ##    ###    ########  ##       ########    #### ########
     ##       ###   ##   ## ##   ##     ## ##       ##           ##  ##
     ##       ####  ##  ##   ##  ##     ## ##       ##           ##  ##

@@ -58,20 +58,21 @@ namespace ft {
 				vector(InputIterator first, InputIterator last, const allocator_type& alloc = allocator_type(),
 					typename ft::enable_if<!ft::is_integral<InputIterator>::value>::type* = NULL): _allocator(alloc) {
 					size_t i = 0;
-					while (first != last) {
-						first++;
+					InputIterator tmp = first;
+					while (tmp != last) {
+						tmp++;
 						i++;
 					}
 					this->_size = i;
 					this->_lenght = i * 2;
-					this->_begin = this->_allocator.allocate(this->_lenght, 0);
+					this->_begin = this->_allocator.allocate(this->_lenght);
 					for (size_type i = 0; i < this->_size; i++) {
 						this->_allocator.construct(this->_begin + i, *first++);
 					}
 				}
-			
+
 			vector(const vector& x): _allocator(x._allocator), _size(x._size), _lenght(x._lenght) {
-				this->_begin = this->_allocator.allocate(this->_lenght, 0);
+				this->_begin = this->_allocator.allocate(this->_lenght);
 				for (size_type i = 0; i < this->_size; i++)
 					this->_allocator.construct(this->_begin + i, *(x._begin + i));
 			}
