@@ -46,6 +46,12 @@ namespace ft {
 
 		typedef typename ft::Node<const Key, T>* 													nodePtr;
 
+		private:
+
+			allocator_type											_alloc;
+			key_compare												_comp;
+			ft::RBTree<const key_type, mapped_type, key_compare>	_tree;
+		
 		/*
 		##     ## ######## ##     ## ########  ######## ########     ######## ##     ## ##    ##  ######  ######## ####  #######  ##    ##  ######
 		###   ### ##       ###   ### ##     ## ##       ##     ##    ##       ##     ## ###   ## ##    ##    ##     ##  ##     ## ###   ## ##    ##
@@ -58,6 +64,8 @@ namespace ft {
 
 		// Constructors
 
+		public:
+		
 		explicit map (const key_compare& comp = key_compare(), const allocator_type& alloc = allocator_type()): _alloc(alloc), _comp(comp), _tree() {};
 
 		template <class InputIterator>
@@ -170,7 +178,7 @@ namespace ft {
 		*/
 
 		mapped_type&	operator[](const key_type& k) {
-			value_type val = this->insert(ft::make_pair(k, mapped_type()));
+			ft::pair<iterator, bool> val = this->insert(ft::make_pair(k, mapped_type()));
 			return val.first->second;
 		}
 
@@ -382,12 +390,6 @@ namespace ft {
 		allocator_type get_allocator() const {
 			return this->_alloc;
 		}
-
-		private:
-
-			allocator_type							_alloc;
-			key_compare								_comp;
-			ft::RBTree<const key_type, mapped_type>	_tree;
 	};
 }
 

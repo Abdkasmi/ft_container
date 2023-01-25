@@ -37,7 +37,7 @@ namespace ft {
 
             if (this->value) {
                 alloc.destroy(this->value);
-                alloc.dealocate(this->value, 1);
+                alloc.deallocate(this->value, 1);
                 this->value = NULL;
             }
         }
@@ -47,21 +47,23 @@ namespace ft {
     class RBTree {
         public:
 
-            typedef typename ft::pair<const Key, T> value_type;
-
-            typedef typename ft::Node<const Key, T>* nodePtr;
-            typedef std::allocator<Node<const Key, T> > Alloc;
+            typedef typename ft::pair<const Key, T>                                        value_type;
+            typedef typename ft::Node<const Key, T>*                                       nodePtr;
+            typedef Compare																   key_compare;
+            typedef std::allocator<Node<const Key, T> >                                    Alloc;
             typedef typename ft::iterator<ft::bidirectional_iterator_tag, T>               iterator;
             typedef typename ft::iterator<ft::bidirectional_iterator_tag, const T>         const_iterator;
             typedef typename ft::reverse_iterator<iterator>                                reverse_iterator;
             typedef typename ft::reverse_iterator<const_iterator>                          const_reverse_iterator;
 
-        public:
+        private:
             nodePtr     root;
             Alloc       alloc;
             Compare     comp;
 
-            RBTree(): root(NULL), alloc(NULL), comp() {};
+        public:
+
+            RBTree(const key_compare& comp = key_compare(), const Alloc& alloc = Alloc()): root(NULL), alloc(alloc), comp(comp) {};
 
             ~RBTree() {};
 
@@ -76,7 +78,6 @@ namespace ft {
 
             void    deallocateNode(nodePtr del) {
                 alloc.destroy(del);
-                alloc.deallocate(del->value, 1);
                 alloc.deallocate(del, 1);
                 del = NULL;
             }
@@ -174,7 +175,7 @@ namespace ft {
                         deallocateNode(oldroot);
                     }
                     else {
-                        nodePtr successor = this->getSuccessor(this->root);
+                       nodePtr successor = this->getSuccessor(this->root);
                         this->root->value->first = successor->value->first;
                         deleteNode(this->root->value->first);
                     }
@@ -259,13 +260,13 @@ namespace ft {
             void clear() {
                 nodePtr max = findMax(this->root);
 
-                while (max != this->_root) {
+                while (max != this->root) {
                     deleteNode(max->value->first);
                     max--;
                 }
-                if (max == this->_root && this->_root) {
-                    deleteNode(this->_root->value->first);
-                    this->_root = NULL;
+                if (max == this->root && this->root) {
+                    deleteNode(this->root->value->first);
+                    this->root = NULL;
                     deleteNode(max->value->first);
                 }
             }
@@ -287,11 +288,11 @@ namespace ft {
                 if (!tmp)
                     return NULL;
                 while (tmp) {
-                    if (!this->comp(tmp->data->first, val) && tmp->left) // val is smaller
+                    if (!this->comp(tmp->value->first, val) && tmp->left) // val is smaller
                         tmp = tmp->left;
-                    else if (this->comp(tmp->data->first, val) && tmp->right) // val bigger
+                    else if (this->comp(tmp->value->first, val) && tmp->right) // val bigger
                         tmp = tmp->right;
-                    else if (!this->comp(tmp->data->first, val) && !this->comp(val, tmp->data->first)) // equal
+                    else if (!this->comp(tmp->value->first, val) && !this->comp(val, tmp->value->first)) // equal
                         break ;
                     else // nil node
                         tmp = NULL;
@@ -318,7 +319,7 @@ namespace ft {
 
             value_type& search(iterator position) {
                 iterator it = this->begin();
-                nodePtr tmp = this->_root;
+                nodePtr tmp = this->root;
 
                 while (it != this->end()) {
                     if (it == position)
