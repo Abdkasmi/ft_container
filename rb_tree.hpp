@@ -88,17 +88,17 @@ namespace ft {
                     this->root->color = black;
                     return (root);
                 }
-                if (val > this->root->value) {
+                if (val > *this->root->value) {
                     this->root->right = this->NewNode(val);
-                    this->root->right = insert(this->root->right);
+                    this->root->right = insert(*this->root->right->value);
                     this->root->right->parent = root;
                 }
-                else if (val < this->root->value) {
+                else if (val < *this->root->value) {
                     this->root->left = this->NewNode(val);
-                    this->root->left = insert(this->root->left);
+                    this->root->left = insert(*this->root->left->value);
                     this->root->left->parent = root;
                 }
-                this->insert_balance(val);
+                this->insert_balance(this->root);
                 return this->root;
             }
 
@@ -176,13 +176,13 @@ namespace ft {
                     }
                     else {
                        nodePtr successor = this->getSuccessor(this->root);
-                        this->root->value->first = successor->value->first;
+                        this->root->value = successor->value;
                         deleteNode(this->root->value->first);
                     }
                 }
                 else if (val->color == red) {
                     if (val->right == NULL && val->left == NULL)
-                        this->deallocate(val);
+                        this->deallocateNode(val);
                     else if (val->right == NULL) {
                         nodePtr tmp = val->left;
                         this->deallocateNode(val->left);
@@ -283,6 +283,12 @@ namespace ft {
                 return cur;
             }
 
+            nodePtr findMax(nodePtr cur) const {
+                while (cur->right)
+                    cur = cur->right;
+                return cur;
+            }
+
             nodePtr search(const Key& val) {
                 nodePtr tmp = this->root;
                 if (!tmp)
@@ -303,13 +309,13 @@ namespace ft {
             iterator search_it(const Key& val) {
                 nodePtr tmp = this->root;
                 if (!tmp)
-                    return NULL;
+                    return this->end();
                 while (tmp) {
-                    if (!this->comp(tmp->data->first, val) && tmp->left) // val is smaller
+                    if (!this->comp(tmp->value->first, val) && tmp->left) // val is smaller
                         tmp = tmp->left;
-                    else if (this->comp(tmp->data->first, val) && tmp->right) // val bigger
+                    else if (this->comp(tmp->value->first, val) && tmp->right) // val bigger
                         tmp = tmp->right;
-                    else if (!this->comp(tmp->data->first, val) && !this->comp(val, tmp->data->first)) // equal
+                    else if (!this->comp(tmp->value->first, val) && !this->comp(val, tmp->value->first)) // equal
                         break ;
                     else // nil node
                         tmp = NULL;

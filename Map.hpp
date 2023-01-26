@@ -179,7 +179,7 @@ namespace ft {
 
 		mapped_type&	operator[](const key_type& k) {
 			ft::pair<iterator, bool> val = this->insert(ft::make_pair(k, mapped_type()));
-			return val.first->second;
+			return val.second;
 		}
 
 		/*
@@ -193,10 +193,10 @@ namespace ft {
 		*/
 
 		pair<iterator, bool> insert(const value_type& val) {
-			iterator it = this->_tree.search(val.first);
+			iterator it = this->_tree.search_it(val.first);
 
 			if (it == this->end()) {
-				this->_tree.insert(val);
+				this->_tree.insert(val.first);
 				iterator ret = this->_tree.search_it(val.first);
 				return (pair<iterator, bool>(ret, true));
 			}
