@@ -37,8 +37,8 @@ namespace ft {
 		typedef typename allocator_type::const_reference											const_reference;
 		typedef typename allocator_type::pointer													pointer;
 		typedef typename allocator_type::const_pointer												const_pointer;
-		typedef typename ft::iterator<ft::bidirectional_iterator_tag, T>::value_type				iterator;
-		typedef typename ft::iterator<ft::bidirectional_iterator_tag, const T>::value_type			const_iterator;
+		typedef typename ft::RbtIterator<ft::pair<const Key, T>	>									iterator;
+		typedef typename ft::RbtIterator<const ft::pair<const Key, T> >								const_iterator;
 		typedef typename ft::reverse_iterator<iterator>												reverse_iterator;
 		typedef typename ft::reverse_iterator<const_iterator>										const_reverse_iterator;
 		typedef ptrdiff_t																			difference_type;
@@ -105,35 +105,51 @@ namespace ft {
 		*/
 
 		iterator begin() {
-			return this->_tree.begin();
+			iterator it(this->_tree.begin()); 
+				
+			return it;
 		}
 
 		const_iterator begin() const {
-			return this->_tree.begin();
+			const_iterator it(this->_tree.begin()); 
+				
+			return it;
 		}
 
 		iterator end() {
-			return this->_tree.end();
+			iterator it(NULL, this->_tree.end()); 
+				
+			return it;
 		}
 
 		const_iterator end() const {
-			return this->_tree.end();
+			const_iterator it(NULL, this->_tree.end()); 
+				
+			return it;
 		}
 
 		reverse_iterator rbegin() {
-			return this->_tree.rbegin();
+			reverse_iterator it(this->end()); 
+				
+			return it;
 		}
 		
 		const_reverse_iterator rbegin() const {
-			return this->_tree.rbegin();
+			const_reverse_iterator it(this->end()); 
+				
+			return it;
 		}
 
 		reverse_iterator rend() {
-			return this->_tree.rend();
+			reverse_iterator it(this->begin()); 
+				
+			return it;
 		}
 
 		const_reverse_iterator rend() const {
-			return this->_tree.rend();
+			const_reverse_iterator it(this->begin()); 
+				
+			return it;
 		}
 
 		/*
@@ -178,8 +194,11 @@ namespace ft {
 		*/
 
 		mapped_type&	operator[](const key_type& k) {
+			nodePtr tmp = this->_tree.getRoot();
+				if (!tmp)
+					this->_tree.setRoot(NULL);
 			ft::pair<iterator, bool> val = this->insert(ft::make_pair(k, mapped_type()));
-			return val.second;
+			return val.first->second;
 		}
 
 		/*
@@ -193,11 +212,12 @@ namespace ft {
 		*/
 
 		pair<iterator, bool> insert(const value_type& val) {
-			iterator it = this->_tree.search_it(val.first);
+			iterator it = this->find(val.first);
+			iterator end_it = this->end();
 
-			if (it == this->end()) {
-				this->_tree.insert(val.first);
-				iterator ret = this->_tree.search_it(val.first);
+			if (it == end_it) {
+				this->_tree.insert(val);
+				iterator ret = this->find(val.first);
 				return (pair<iterator, bool>(ret, true));
 			}
 			return pair<iterator, bool>(it, false);
@@ -301,26 +321,29 @@ namespace ft {
 		*/
 
 		iterator find(const key_type& k) {
-			iterator it = this->begin();
-			nodePtr tmp = this->_tree.search(k);
-			nodePtr	root = this->_tree.getRoot();
+			nodePtr tmp = this->_tree.search_(k);
 
-			while (it != this->end()) {
-				if (tmp == root)
-					return it;
-				it++;
-				tmp++;
-				root++;
+			if (tmp) {
+				iterator it(tmp);
+				return it;
 			}
-			return this->end();
+			iterator it = this->end();
+			return it;
 		}
 
 		const_iterator find(const key_type& k) const {
-			return this->find(k);
+			nodePtr tmp = this->_tree.search_(k);
+
+			if (tmp) {
+				const_iterator it(tmp);
+				return it;
+			}
+			const_iterator it = this->end();
+			return it;
 		}
 
 		size_type count(const key_type& k) const {
-			if (this->_tree.search(k))
+			if (this->_tree.search_(k))
 				return 1;
 			return 0;
 		}

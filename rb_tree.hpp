@@ -21,7 +21,7 @@ namespace ft {
 
         Node(): value(NULL), color(red), left(NULL), right(NULL), parent(NULL){};
 
-        Node(T val) {
+        Node(const ft::pair<const Key, T>& val) {
             std::allocator<ft::pair<const Key, T> > alloc;
 
             this->value = alloc.allocate(1);
@@ -51,10 +51,8 @@ namespace ft {
             typedef typename ft::Node<const Key, T>*                                       nodePtr;
             typedef Compare																   key_compare;
             typedef std::allocator<Node<const Key, T> >                                    Alloc;
-            typedef typename ft::iterator<ft::bidirectional_iterator_tag, T>               iterator;
-            typedef typename ft::iterator<ft::bidirectional_iterator_tag, const T>         const_iterator;
-            typedef typename ft::reverse_iterator<iterator>                                reverse_iterator;
-            typedef typename ft::reverse_iterator<const_iterator>                          const_reverse_iterator;
+            // typedef typename ft::RbtIterator<ft::pair<const Key, T>	>	                   iterator;
+            // typedef typename ft::RbtIterator<const ft::pair<const Key, T> >                const_iterator;
 
         private:
             nodePtr     root;
@@ -67,7 +65,7 @@ namespace ft {
 
             ~RBTree() {};
 
-            nodePtr NewNode(value_type& val) {
+            nodePtr NewNode(const value_type& val) {
                 nodePtr node;
                 Alloc   alloc;
 
@@ -82,7 +80,7 @@ namespace ft {
                 del = NULL;
             }
 
-            nodePtr    insert(value_type& val) {
+            nodePtr    insert(const value_type& val) {
                 if (!this->root) {
                     this->root = this->NewNode(val);
                     this->root->color = black;
@@ -160,7 +158,7 @@ namespace ft {
             }
 
             void    deleteNode(const Key &key) {
-                nodePtr val = this->search(key);
+                nodePtr val = this->search_(key);
 
                 if (!this->root || !val)
                     return ;
@@ -271,25 +269,7 @@ namespace ft {
                 }
             }
 
-            nodePtr findMin(nodePtr cur) {
-                while (cur->left)
-                    cur = cur->left;
-                return cur;
-            }
-
-            nodePtr findMax(nodePtr cur) {
-                while (cur->right)
-                    cur = cur->right;
-                return cur;
-            }
-
-            nodePtr findMax(nodePtr cur) const {
-                while (cur->right)
-                    cur = cur->right;
-                return cur;
-            }
-
-            nodePtr search(const Key& val) {
+            nodePtr search_(const Key& val) {
                 nodePtr tmp = this->root;
                 if (!tmp)
                     return NULL;
@@ -306,36 +286,6 @@ namespace ft {
                 return tmp;
             }
 
-            iterator search_it(const Key& val) {
-                nodePtr tmp = this->root;
-                if (!tmp)
-                    return this->end();
-                while (tmp) {
-                    if (!this->comp(tmp->value->first, val) && tmp->left) // val is smaller
-                        tmp = tmp->left;
-                    else if (this->comp(tmp->value->first, val) && tmp->right) // val bigger
-                        tmp = tmp->right;
-                    else if (!this->comp(tmp->value->first, val) && !this->comp(val, tmp->value->first)) // equal
-                        break ;
-                    else // nil node
-                        tmp = NULL;
-                }
-                return tmp;
-            }
-
-            value_type& search(iterator position) {
-                iterator it = this->begin();
-                nodePtr tmp = this->root;
-
-                while (it != this->end()) {
-                    if (it == position)
-                        return *tmp->value;
-                    it++;
-                    tmp++;
-                }
-                return *tmp->value;
-            }
-
             nodePtr getSuccessor(nodePtr root) { // get the inorder successor
                 nodePtr curr = root->right;
                 while (curr->left)
@@ -347,42 +297,51 @@ namespace ft {
                 return this->root;
             }
 
+            void setRoot(nodePtr tmp) {
+                this->root = tmp;
+            }
+
+            nodePtr findMin(nodePtr cur) {
+                while (cur->left)
+                    cur = cur->left;
+                return cur;
+            }
+
+            nodePtr findMax(nodePtr cur) {
+                while (cur->right)
+                    cur = cur->right;
+                return cur;
+            }
+
             // iterator
 
-            iterator begin() {
-                return findMin(this->root);
+            nodePtr begin() {
+                nodePtr tmp = this->root;
+				
+				if (!tmp)
+					return (NULL);
+				if (!tmp->left)
+					return (tmp);
+				while (tmp->left)
+				{
+					tmp = tmp->left;
+				}
+				return (tmp);
             }
 
-            iterator end() {
-                nodePtr last = findMax(this->root);
-                return last->right;
+            nodePtr end() {
+               nodePtr tmp = this->root;
+				
+				if (!tmp)
+					return (NULL);
+				if (!tmp->right)
+					return (tmp);
+				while (tmp->right)
+				{
+					tmp = tmp->right;
+				}
+				return (tmp);
             }
-
-            const_iterator begin() const {
-                return findMin(this->root);
-            }
-
-            const_iterator end() const {
-                nodePtr last = findMax(this->root);
-                return last->right;
-            }
-
-            reverse_iterator rbegin() {
-                return reverse_iterator(this->end());
-            }
-
-            const_reverse_iterator rbegin() const {
-                return reverse_iterator(this->end());
-            }
-
-            reverse_iterator rend() {
-                return reverse_iterator(this->begin());
-            }
-            
-            const_reverse_iterator rend() const {
-                return reverse_iterator(this->begin());
-            }
-
     };
 
 }

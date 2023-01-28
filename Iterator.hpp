@@ -14,6 +14,7 @@ namespace ft {
 	
 	template <class T>
 	class Iterator_traits{
+	public:
 		typedef typename T::difference_type		difference_type;
 		typedef	typename T::value_type			value_type;
 		typedef	typename T::pointer				pointer;
@@ -23,6 +24,7 @@ namespace ft {
 
 	template <class T>
 	class Iterator_traits<T*> {
+	public:
 		typedef ptrdiff_t					difference_type;
 		typedef	T							value_type;
 		typedef	T*							pointer;
@@ -32,6 +34,7 @@ namespace ft {
 
 	template <class T>
 	class Iterator_traits<const T*> {
+	public:
 		typedef ptrdiff_t					difference_type;
 		typedef	T							value_type;
 		typedef	const T*					pointer;
@@ -41,9 +44,10 @@ namespace ft {
 
 
 	template <class Category, class T, class Distance = ptrdiff_t, class Pointer = T*, class Reference = T&>
-	struct iterator {
+	class iterator {
+	public:
 		typedef T			value_type;
-		typedef Distance	distance_type;
+		typedef Distance	difference_type;
 		typedef Pointer		pointer;
 		typedef Reference	reference;
 		typedef Category	iterator_category;
@@ -244,8 +248,8 @@ namespace ft {
 			// operator=
 
 			random_access_iterator& operator=(random_access_iterator const &rhs) {
-				this->ptr = rhs.ptr;
-
+				if (this != &rhs)
+					this->ptr = rhs.ptr;
 				return *this;
 			}
 
