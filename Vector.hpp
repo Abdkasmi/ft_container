@@ -219,11 +219,11 @@ namespace ft {
 			reference at(size_type n) {
 				if (n > this->_size)
 					throw std::out_of_range("vector::at");
-				return *this->begin + n;
+				return this->_begin[n];
 			}
 
 			const_reference at(size_type n) const {
-				return *this->_begin + n;
+				return this->_begin[n];
 			}
 
 			reference front() {

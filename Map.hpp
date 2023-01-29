@@ -414,5 +414,46 @@ namespace ft {
 			return this->_alloc;
 		}
 	};
+
+	// overload operators
+
+	template <class Key, class T, class Compare, class Alloc>
+	bool operator==(const map<Key, T, Compare, Alloc>& lhs, const map<Key, T, Compare, Alloc>& rhs)
+	{
+		if (lhs.size() != rhs.size())
+			return (false);
+		typename map<Key, T>::const_iterator	lhs_b(lhs.begin());
+		typename map<Key, T>::const_iterator	rhs_b(rhs.begin());
+		typename map<Key, T>::const_iterator	ite(lhs.end());
+
+		while (lhs_b != ite)
+		{
+			if (lhs_b->first != rhs_b->first)
+				return (false);
+			lhs_b++;
+			rhs_b++;
+		}
+		return (true);
+	}
+
+	template <class Key, class T, class Compare, class Alloc>
+	bool	operator!=(const map<Key, T, Compare, Alloc>& lhs, const map<Key, T, Compare, Alloc>& rhs)
+	{ return (!(lhs == rhs)); }
+
+	template <class Key, class T, class Compare, class Alloc>
+	bool	operator<(const map<Key, T, Compare, Alloc>& lhs, const map<Key, T, Compare, Alloc>& rhs)
+	{ return (lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end())); }
+
+	template <class Key, class T, class Compare, class Alloc>
+	bool	operator<=(const map<Key, T, Compare, Alloc>& lhs, const map<Key, T, Compare, Alloc>& rhs)
+	{ return (!(rhs < lhs)); }
+
+	template <class Key, class T, class Compare, class Alloc>
+	bool	operator>(const map<Key, T, Compare, Alloc>& lhs, const map<Key, T, Compare, Alloc>& rhs)
+	{ return (rhs < lhs); }
+
+	template <class Key, class T, class Compare, class Alloc>
+	bool	operator>=(const map<Key, T, Compare, Alloc>& lhs, const map<Key, T, Compare, Alloc>& rhs)
+	{ return (!(lhs < rhs)); }
 }
 
