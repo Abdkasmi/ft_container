@@ -126,9 +126,9 @@
 // 	return 0;
 // }
 
-#include "Vector.hpp"
-#include "Map.hpp"
-#include "Stack.hpp"
+#include "vector.hpp"
+#include "map.hpp"
+#include "stack.hpp"
 
 #include <vector>
 #include <map>

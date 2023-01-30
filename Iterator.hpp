@@ -126,9 +126,9 @@ namespace ft {
 					return *this;
 				}
 
-				reverse_iterator	&operator++(int) { // post
+				reverse_iterator	operator++(int) { // post
 					reverse_iterator tmp(*this);
-					operator++();
+					--this->_it;
 					return tmp;
 				}
 
