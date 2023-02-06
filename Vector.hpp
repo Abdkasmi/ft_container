@@ -178,7 +178,7 @@ namespace ft {
 				return this->_lenght;
 			}
 
-			bool empty() {
+			bool empty() const {
 				return !this->_size;
 			}
 

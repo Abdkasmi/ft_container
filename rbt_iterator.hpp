@@ -1,11 +1,13 @@
 #pragma once
 
-#include <iostream> 
-#include "rb_tree.hpp"
+#include <iostream>
+#include "node.hpp"
 #include "Iterator.hpp"
+//#include "rb_tree.hpp"
 #include <stdexcept>
 #include <functional>
 
+class Node;
 namespace ft {
 
     template< class T2 > struct remove_const                { typedef T2 type; };
@@ -24,7 +26,7 @@ namespace ft {
 			typedef typename ft::iterator<RbtIterator, T>::pointer				pointer;
 			typedef typename ft::iterator<RbtIterator, T>::reference			reference;
 
-            typedef typename ft::Node<const first, second>*             nodePtr;
+            typedef typename ft::Node<const first, second>*                     nodePtr;
             
             RbtIterator(): _node(NULL), _end(NULL) {}
 
@@ -33,7 +35,7 @@ namespace ft {
             RbtIterator(nodePtr node, nodePtr end): _node(node), _end(end) {}
 
             RbtIterator(const RbtIterator<typename remove_const<T>::type> & ref) : _node(ref._node), _end(ref._end) {}
-            
+
             RbtIterator&    operator=(const RbtIterator& x) {
                 this->_node = x._node;
                 this->_end = x._end;
@@ -46,7 +48,7 @@ namespace ft {
                 nodePtr p;
                 if (this->_node == NULL) { // if !node => trying ++ from end(), we go to the root
                     this->_end = this->_node;
-                    this->_node = ft::RBTree<const first, second>::getRoot();
+//                    this->_node = ft::RBTree<const first, second>::getRoot();
                     if (this->_node == NULL) // tree is empty
                         throw std::underflow_error("Underflow error !");
                     while (this->_node->left) // go to the smallest value in the tree (first inorder node)
@@ -59,7 +61,7 @@ namespace ft {
                             this->_node = this->_node->left;
                     }
                     else { // we went already through the left-subtree and there is no right-subtree => we move up looking for a P for wich _node is a left child
-                           // A non NULL P is the successor, if P is NULL the successor is the end
+                        // A non NULL P is the successor, if P is NULL the successor is the end
                         p = this->_node->parent;
                         while (p && this->_node == p->right) {
                             this->_node = p;
@@ -73,7 +75,6 @@ namespace ft {
 
             RbtIterator operator++(int) { // it++
                 RbtIterator this_tmp = *this;
-
                 ++(*this);
                 return this_tmp;
             }
@@ -82,10 +83,10 @@ namespace ft {
                 nodePtr p;
                 if (this->_node == NULL) { // if _node == NULL trying to -- from root, we go to root
                     this->_end = this->_node;
-                    this->_node = ft::RBTree<const first, second>::getRoot();
+//                    this->_node = ft::RBTree<const first, second>::getRoot();
                     if (this->_node == NULL) // tree is empty
                         throw std::underflow_error("Underflow caught");
-                    this->_node = ft::RBTree<const first, second>::findMax(this->_node); // get biggest value
+//                    this->_node = ft::RBTree<const first, second>::findMax(this->_node); // get biggest value
                 }
                 else {
                     if (this->_node->left) {
@@ -106,29 +107,49 @@ namespace ft {
             }
 
             RbtIterator operator--(int) { // it--
-                RbtIterator this_tmp = *this;
-
+                RbtIterator tmp(*this);
                 --(*this);
-                return this_tmp;
+                return (tmp);
+            }
+
+            nodePtr getNode() const {
+                return this->_node;
+            }
+
+            nodePtr getEnd() const {
+                return this->_end;
             }
 
             void    setBase(nodePtr tmp) {
                 this->_node = tmp;
             }
 
-            nodePtr base(void) const {
+            nodePtr base() const {
                 return this->_node;
             }
 
-            value_type	&operator*(void) const { 
+            value_type	&operator*() const {
                 return *(this->_node->value);
             }
 
-			value_type	*operator->(void) const {
-                return (&this->_node->value);
+			value_type	*operator->() const {
+                return (this->_node->value);
             }
 
-        private :
+            nodePtr greatest(nodePtr ptr) const {
+                while (ptr->right != _end)
+                    ptr = ptr->right;
+                return ptr;
+            }
+
+            nodePtr smallest(nodePtr ptr) const {
+                while (ptr->left != _end)
+                    ptr = ptr->left;
+                return ptr;
+            }
+
+        public :
+
 
             nodePtr _node;
             nodePtr _end;

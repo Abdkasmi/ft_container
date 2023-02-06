@@ -48,7 +48,7 @@ namespace ft {
 			// Empty
 
 			bool empty() const {
-				return _container.empty();
+				return (this->_container.empty());
 			}
 
 			// Size
@@ -113,11 +113,11 @@ namespace ft {
 
 			template <class T, class Container>
  				bool operator== (const stack<T,Container>& lhs, const stack<T,Container>& rhs) {
-					return (lhs._container == rhs._ccontainer);
+					return (lhs._container == rhs._container);
 				}
 			template <class T, class Container>
  				bool operator!= (const stack<T,Container>& lhs, const stack<T,Container>& rhs) {
-					return (lhs._container != rhs._ccontainer);
+					return (lhs._container != rhs._container);
 				}
 			template <class T, class Container>
 				bool operator<  (const stack<T,Container>& lhs, const stack<T,Container>& rhs) {

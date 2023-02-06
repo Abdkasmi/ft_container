@@ -31,7 +31,6 @@ namespace ft {
 		typedef T																					mapped_type;
 		typedef ft::pair<const key_type,mapped_type>												value_type;
 		typedef Compare																				key_compare;
-		//typedef value_comp																		value_compare;
 		typedef Alloc																				allocator_type;
 		typedef typename allocator_type::reference													reference;
 		typedef typename allocator_type::const_reference											const_reference;
@@ -69,26 +68,23 @@ namespace ft {
 		explicit map (const key_compare& comp = key_compare(), const allocator_type& alloc = allocator_type()): _alloc(alloc), _comp(comp), _tree() {};
 
 		template <class InputIterator>
-			map (InputIterator first, InputIterator last, const key_compare& comp = key_compare(), const allocator_type& alloc = allocator_type()): _comp(comp), _alloc(alloc), _tree() {
-				while (first != last) {
-					this->insert(*first);
-					first++;
-				}
+			map (InputIterator first, InputIterator last, const key_compare& comp = key_compare(), const allocator_type& alloc = allocator_type(), typename ft::enable_if<!is_integral<InputIterator>::value, InputIterator>::type* = NULL): _alloc(alloc), _comp(comp), _tree() {
+				this->insert(first, last);
 			}
 		
-		map (const map & x): _tree(), _alloc(x.alloc), _comp(x.comp) {
+		map (const map & x): _alloc(x._alloc), _comp(x._comp), _tree() {
 			this->insert(x.begin(), x.end());
 		}
 
 		// Destructor
 
-		~map() {
-			this->clear();
-		}
+		~map() {}
 
 		// Copy operator
 
 		map& operator=(const map& x) {
+			this->_comp = x.key_comp();
+			this->_alloc = x.get_allocator();
 			this->clear();
 			this->insert(x.begin(), x.end());
 			return *this;
@@ -169,14 +165,7 @@ namespace ft {
 		}
 		
 		size_type size() const {
-			size_type lenght = 0;
-			iterator it = this->_tree.begin();
-
-			while (it != this->_tree.end()) {
-				lenght++;
-				it++;
-			}
-			return lenght;
+			return this->_tree.getSize();
 		}
 
 		size_type max_size() const {
@@ -185,7 +174,7 @@ namespace ft {
 
 		/*
 		######## ##       ######## ##     ## ######## ##    ## ########       ###     ######   ######  ########  ######   ######
-		##       ##       ##       ###j   ### ##       ###   ##    ##         ## ##   ##    ## ##    ## ##       ##    ## ##    ##
+		##       ##       ##       ###   ### ##       ###   ##    ##         ## ##   ##    ## ##    ## ##       ##    ## ##    ##
 		##       ##       ##       #### #### ##       ####  ##    ##        ##   ##  ##       ##       ##       ##       ##
 		######   ##       ######   ## ### ## ######   ## ## ##    ##       ##     ## ##       ##       ######    ######   ######
 		##       ##       ##       ##     ## ##       ##  ####    ##       ######### ##       ##       ##             ##       ##
@@ -194,11 +183,7 @@ namespace ft {
 		*/
 
 		mapped_type&	operator[](const key_type& k) {
-			nodePtr tmp = this->_tree.getRoot();
-				if (!tmp)
-					this->_tree.setRoot(NULL);
-			ft::pair<iterator, bool> val = this->insert(ft::make_pair(k, mapped_type()));
-			return val.first->second;
+			return (((this->insert(ft::make_pair(k,mapped_type()))).first->second));
 		}
 
 		/*
@@ -212,21 +197,24 @@ namespace ft {
 		*/
 
 		pair<iterator, bool> insert(const value_type& val) {
-			iterator it = this->find(val.first);
-			iterator end_it = this->end();
+            iterator it = this->_tree.search_(val.first);
+            bool ret = true;
 
-			if (it == end_it) {
-				this->_tree.insert(val);
-				iterator ret = this->find(val.first);
-				return (pair<iterator, bool>(ret, true));
-			}
-			return pair<iterator, bool>(it, false);
+            if (it == this->end())
+            {
+//                std::cout << "inserting" << std::endl;
+                this->_tree.insert(val);
+                iterator it_ret(this->find(val.first));
+                return (pair<iterator,bool>(it_ret, ret));
+            }
+            else
+                ret = false;
+            return (pair<iterator,bool>(it, ret));
 		}
 
 		iterator insert(iterator position, const value_type& val) {
 			(void)position;
 			ft::pair<iterator, bool> it = this->insert(val);
-
 			return it.first;
 		}
 
@@ -239,35 +227,36 @@ namespace ft {
 			}
 
 		void	erase(iterator position) {
-			value_type to_find = this->_tree.search(position);
-			this->_tree.deleteNode(to_find.first);
+			
+			nodePtr to_find = this->_tree.search_(position->first);
+			this->_tree.deleteNode(to_find->value->first);
 		}
 
 		size_type erase(const key_type& k) {
-			if (this->_tree.deleteNode(k.first))
+			if (this->_tree.deleteNode(k))
 				return 1;
 			return 0;
 		}
 
 		void	erase(iterator first, iterator last) {
-			value_type k;
 			while (first != last) {
-				k = this->_tree.search(first);
-				this->_tree.deleteNode(k.first);
+				erase(first);
 				first++;
 			}
 		}
 
 		void	swap(map& x){
-			map tmp = this;
+			allocator_type											alloc = this->_alloc;
+			key_compare												comp = this->_comp;
+			ft::RBTree<const key_type, mapped_type, key_compare>	tree = this->_tree;
 
 			this->_alloc = x._alloc;
 			this->_comp = x._comp;
 			this->_tree = x._tree;
 
-			x._alloc = tmp._alloc;
-			x._comp = tmp._comp;
-			x._tree = tmp._tree;
+			x._alloc = alloc;
+			x._comp = comp;
+			x._tree = tree;
 		}
 
 		void	clear() {
@@ -288,23 +277,27 @@ namespace ft {
 			return this->_comp;
 		}
 
-		class value_compare: public std::binary_function<value_type, value_type, bool> {
-			friend class map;
-			
-			protected:
-			
-				Compare comp;
-				value_compare (Compare c) : comp(c) {}  // constructed with map's comparison object
-			
-			public:
-			
-				typedef bool result_type;
-				typedef value_type first_argument_type;
-				typedef value_type second_argument_type;
-				bool operator() (const value_type& x, const value_type& y) const {
-					return comp(x.first, y.first);
-				}
-		};
+
+	private : 
+				class value_compare: public std::binary_function<value_type, value_type, bool> {
+					friend class map;
+					
+					protected:
+					
+						Compare comp;
+						value_compare (Compare c) : comp(c) {}  // constructed with map's comparison object
+					
+					public:
+					
+						typedef bool result_type;
+						typedef value_type first_argument_type;
+						typedef value_type second_argument_type;
+						bool operator() (const value_type& x, const value_type& y) const {
+							return comp(x.first, y.first);
+						}
+				};
+
+	public :
 
 		value_compare value_comp() const {
 			return value_compare(this->_comp);
@@ -343,13 +336,14 @@ namespace ft {
 		}
 
 		size_type count(const key_type& k) const {
-			if (this->_tree.search_(k))
+			nodePtr toFind = this->_tree.search_(k);
+            if (toFind->value->first == k)
 				return 1;
 			return 0;
 		}
 
 		iterator lower_bound(const key_type& k) {
-			iterator it = this->begin();
+			iterator it = this->_tree.begin();
 
 			while (it != this->end()) {
 				if (this->_comp((*it).first, k))
@@ -360,7 +354,7 @@ namespace ft {
 		}
 
 		const_iterator lower_bound(const key_type& k) const {
-			iterator it = this->begin();
+			iterator it = this->_tree.begin();
 
 			while (it != this->end()) {
 				if (this->_comp((*it).first, k))
@@ -371,7 +365,7 @@ namespace ft {
 		}
 
 		iterator upper_bound(const key_type& k) {
-			iterator it = this->begin();
+			iterator it = this->_tree.begin();
 
 			while (it != this->end()) {
 				if (this->_comp(k, (*it).first))
@@ -382,7 +376,7 @@ namespace ft {
 		}
 
 		const_iterator upper_bound(const key_type& k) const {
-			iterator it = this->begin();
+			iterator it = this->_tree.begin();
 
 			while (it != this->end()) {
 				if (this->_comp(k, (*it).first))

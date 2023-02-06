@@ -1,16 +1,16 @@
 #include <iostream>
-// #include <string>
+ #include <string>
 
-// #if 0 //CREATE A REAL STL EXAMPLE
-// 	#include <map>
-// 	#include <stack>
-// 	#include <vector>
-// 	namespace ft = std;
-// #else
-// 	#include "Map.hpp"
-// 	#include "Stack.hpp"
-// 	#include "Vector.hpp"
-// #endif
+ #if 0 //CREATE A REAL STL EXAMPLE
+ 	#include <map>
+ 	#include <stack>
+ 	#include <vector>
+ 	namespace ft = std;
+ #else
+ 	#include "map.hpp"
+ 	#include "stack.hpp"
+ 	#include "vector.hpp"
+ #endif
 
 // #include <stdlib.h>
 
@@ -44,28 +44,36 @@
 // 	//printSize(mp);
 // }
 
-// int		main(void)
-// {
-// 	ft::map<T1, T2> mp, mp2;
+template <typename T>
+std::string	printPair(const T &iterator, bool nl = true, std::ostream &o = std::cout)
+{
+    o << "key: " << iterator->first << " | value: " << iterator->second;
+    if (nl)
+        o << std::endl;
+    return ("");
+}
 
-// 	ft_insert(mp, T3(42, "lol"));
-// 	ft_insert(mp, T3(42, "mdr"));
+ int		main(void)
+ {
+     ft::map<int, std::string> mp;
+     ft::map<int, std::string>::iterator it;
+     ft::pair<ft::map<int, std::string>::iterator, bool> tmp;
+     ft::pair<ft::map<int, std::string>::iterator, bool> tmp2;
+     ft::pair<ft::map<int, std::string>::iterator, bool> tmp3;
+     ft::pair<ft::map<int, std::string>::iterator, bool> tmp4;
 
-// 	ft_insert(mp, T3(50, "mdr"));
-// 	ft_insert(mp, T3(35, "funny"));
+     tmp = mp.insert(ft::pair<int, std::string>(1, "salut"));
+     tmp2 = mp.insert(ft::pair<int, std::string>(7, "bonjour"));
+     tmp3 = mp.insert(ft::pair<int, std::string>(5, "pour"));
+     tmp4 = mp.insert(ft::pair<int, std::string>(6, "lolo"));
 
-// 	ft_insert(mp, T3(45, "bunny"));
-// 	ft_insert(mp, T3(21, "fizz"));
-// 	ft_insert(mp, T3(38, "buzz"));
+     std::cout << tmp.second << "value : " << printPair(tmp.first);
+     std::cout << tmp2.second << "value : " << printPair(tmp2.first);
+     std::cout << tmp3.second << "value : " << printPair(tmp3.first);
+     std::cout << tmp4.second << "value : " << printPair(tmp4.first);;
 
-// 	ft_insert(mp, mp.begin(), T3(55, "fuzzy"));
-
-// 	ft_insert(mp2, mp2.begin(), T3(1337, "beauty"));
-// 	ft_insert(mp2, mp2.end(), T3(1000, "Hello"));
-// 	ft_insert(mp2, mp2.end(), T3(1500, "World"));
-
-// 	return (0);
-// }
+ 	return (0);
+ }
 
 
 // int main() {
@@ -126,14 +134,14 @@
 // 	return 0;
 // }
 
-#include "vector.hpp"
-#include "map.hpp"
-#include "stack.hpp"
-
-#include <vector>
-#include <map>
-#include <stack>
-#include <list>
+//#include "vector.hpp"
+//#include "map.hpp"
+//#include "stack.hpp"
+//
+//#include <vector>
+//#include <map>
+//#include <stack>
+//#include <list>
 
 #define GREEN "\033[32m"
 #define YELLOW "\033[33m"
@@ -141,12 +149,140 @@
 #define CYAN "\033[36m"
 #define WHITE "\033[37m"
 
-#ifndef NAMESPACE
-# define NAMESPACE ft
-#endif
+//#ifndef NAMESPACE
+//# define NAMESPACE ft
+//#endif
+//
+//
+//template <typename T>
+//class foo {
+//	public:
+//		typedef T	value_type;
+//
+//		foo(void) : value(), _verbose(false) { };
+//		foo(value_type src, const bool verbose = false) : value(src), _verbose(verbose) { };
+//		foo(foo const &src, const bool verbose = false) : value(src.value), _verbose(verbose) { };
+//		~foo(void) { if (this->_verbose) std::cout << "~foo::foo()" << std::endl; };
+//		void m(void) { std::cout << "foo::m called [" << this->value << "]" << std::endl; };
+//		void m(void) const { std::cout << "foo::m const called [" << this->value << "]" << std::endl; };
+//		foo &operator=(value_type src) { this->value = src; return *this; };
+//		foo &operator=(foo const &src) {
+//			if (this->_verbose || src._verbose)
+//				std::cout << "foo::operator=(foo) CALLED" << std::endl;
+//			this->value = src.value;
+//			return *this;
+//		};
+//		value_type	getValue(void) const { return this->value; };
+//		void		switchVerbose(void) { this->_verbose = !(this->_verbose); };
+//
+//		operator value_type(void) const {
+//			return value_type(this->value);
+//		}
+//	private:
+//		value_type	value;
+//		bool		_verbose;
+//};
+//
+//template <typename T>
+//std::ostream	&operator<<(std::ostream &o, foo<T> const &bar) {
+//	o << bar.getValue();
+//	return o;
+//}
+//
+//#define T1 char
+//#define T2 foo<float>
+//typedef NAMESPACE::map<T1,T2>::value_type T3;
+//typedef NAMESPACE::map<T1,T2>::iterator ft_iterator;
+//typedef NAMESPACE::map<T1,T2>::const_iterator const_it;
+//typedef NAMESPACE::map<T1, T2> _map;
+//
+//static unsigned int i = 0;
+//
+//template <typename T>
+//std::string	printPair(const T &iterator, bool nl = true, std::ostream &o = std::cout)
+//{
+//	o << "key: " << iterator->first << " | value: " << iterator->second;
+//	if (nl)
+//		o << std::endl;
+//	return ("");
+//}
+//
+//void	ft_comp(const _map &mp, const const_it &it1, const const_it &it2)
+//{
+//	bool res[2];
+//
+//	std::cout << "\t-- [" << ++i << "] --" << std::endl;
+//	res[0] = mp.key_comp()(it1->first, it2->first);
+//	res[1] = mp.value_comp()(*it1, *it2);
+//	std::cout << "with [" << it1->first << " and " << it2->first << "]: ";
+//	std::cout << "key_comp: " << res[0] << " | " << "value_comp: " << res[1] << std::endl;
+//}
 
-int		main(void)
-{
+// template <typename MAP>
+// void	ft_bound(MAP &mp, const T1 &param)
+// {
+// 	ft_iterator ite = mp.end(), it[2];
+// 	ft::pair<ft_iterator, ft_iterator> ft_range;
+
+// 	std::cout << "\t-- [" << iter++ << "] --" << std::endl;
+// 	std::cout << "with key [" << param << "]:" << std::endl;
+// 	it[0] = mp.lower_bound(param); it[1] = mp.upper_bound(param);
+// 	ft_range = mp.equal_range(param);
+// 	std::cout << "lower_bound: " << (it[0] == ite ? "end()" : printPair(it[0], false)) << std::endl;
+// 	std::cout << "upper_bound: " << (it[1] == ite ? "end()" : printPair(it[1], false)) << std::endl;
+// 	std::cout << "equal_range: " << (ft_range.first == it[0] && ft_range.second == it[1]) << std::endl;
+// }
+
+// template <typename MAP>
+// void	ft_const_bound(const MAP &mp, const T1 &param)
+// {
+// 	ft_const_iterator ite = mp.end(), it[2];
+// 	ft::pair<ft_const_iterator, ft_const_iterator> ft_range;
+
+// 	std::cout << "\t-- [" << iter++ << "] (const) --" << std::endl;
+// 	std::cout << "with key [" << param << "]:" << std::endl;
+// 	it[0] = mp.lower_bound(param); it[1] = mp.upper_bound(param);
+// 	ft_range = mp.equal_range(param);
+// 	std::cout << "lower_bound: " << (it[0] == ite ? "end()" : printPair(it[0], false)) << std::endl;
+// 	std::cout << "upper_bound: " << (it[1] == ite ? "end()" : printPair(it[1], false)) << std::endl;
+// 	std::cout << "equal_range: " << (ft_range.first == it[0] && ft_range.second == it[1]) << std::endl;
+// }
+
+//int		main(void)
+//{
+//	_map	mp;
+//
+//	mp['a'] = 2.3;
+//	mp['b'] = 1.4;
+//	mp['c'] = 0.3;
+//	mp['d'] = 4.2;
+//
+//	for (const_it it1 = mp.begin(); it1 != mp.end(); ++it1)
+//		for (const_it it2 = mp.begin(); it2 != mp.end(); ++it2)
+//			ft_comp(mp, it1, it2);
+
+	// std::list<T3> lst;
+	// unsigned int lst_size = 10;
+	// for (unsigned int i = 0; i < lst_size; ++i)
+	// 	lst.push_back(T3(i + 1, (i + 1) * 3));
+	// NAMESPACE::map<T1, foo<int> > mp(lst.begin(), lst.end());
+
+	// ft_const_bound(mp, -10);
+	// ft_const_bound(mp, 1);
+	// ft_const_bound(mp, 5);
+	// ft_const_bound(mp, 10);
+	// ft_const_bound(mp, 50);
+
+	// mp.lower_bound(3)->second = 404;
+	// mp.upper_bound(7)->second = 842;
+	// ft_bound(mp, 5);
+	// ft_bound(mp, 7);
+//
+
+
+// int		main(void)
+// {
+
 	// {	/*------------------------------ VECTOR -----------------------------*/
 	// 	std::cout << YELLOW << "///////////////// -VECTOR- /////////////////" << std::endl;
 	// 	std::cout << "-----------------------------------------------------------" << std::endl;
@@ -940,8 +1076,8 @@ int		main(void)
 	// 	std::cout << std::endl;
 	// }
 
-	std::cout << GREEN << "///////////////// -THE END- /////////////////" << WHITE << std::endl;
-	return (0);
-}
+// 	std::cout << GREEN << "///////////////// -THE END- /////////////////" << WHITE << std::endl;
+// 	return (0);
+// }
 
 // clear && c++ -Wall -Werror -Wextra -D NAMESPACE=ft main.cpp && time ./a.out
