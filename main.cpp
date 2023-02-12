@@ -1,6 +1,10 @@
 #include <iostream>
  #include <string>
 
+#include <map>
+
+#include <vector>
+
  #if 0 //CREATE A REAL STL EXAMPLE
  	#include <map>
  	#include <stack>
@@ -61,16 +65,42 @@ std::string	printPair(const T &iterator, bool nl = true, std::ostream &o = std::
      ft::pair<ft::map<int, std::string>::iterator, bool> tmp2;
      ft::pair<ft::map<int, std::string>::iterator, bool> tmp3;
      ft::pair<ft::map<int, std::string>::iterator, bool> tmp4;
+     ft::pair<ft::map<int, std::string>::iterator, bool> tmp5;
+     ft::pair<ft::map<int, std::string>::iterator, bool> tmp6;
+     ft::pair<ft::map<int, std::string>::iterator, bool> tmp7;
 
-     tmp = mp.insert(ft::pair<int, std::string>(1, "salut"));
-     tmp2 = mp.insert(ft::pair<int, std::string>(7, "bonjour"));
-     tmp3 = mp.insert(ft::pair<int, std::string>(5, "pour"));
+     tmp = mp.insert(ft::pair<int, std::string>(10, "pouette"));
+     tmp2 = mp.insert(ft::pair<int, std::string>(5, "bonjour"));
+     tmp3 = mp.insert(ft::pair<int, std::string>(58, "pour"));
      tmp4 = mp.insert(ft::pair<int, std::string>(6, "lolo"));
+     tmp5 = mp.insert(ft::pair<int, std::string>(30, "hihi"));
+     tmp6 = mp.insert(ft::pair<int, std::string>(8, "hohhohohoo"));
+     tmp7 = mp.insert(ft::pair<int, std::string>(4, "lyly"));
 
-     std::cout << tmp.second << "value : " << printPair(tmp.first);
-     std::cout << tmp2.second << "value : " << printPair(tmp2.first);
-     std::cout << tmp3.second << "value : " << printPair(tmp3.first);
-     std::cout << tmp4.second << "value : " << printPair(tmp4.first);;
+     it = mp.begin();
+//     it++;
+//     it++;
+//     it++;
+//     it++;
+//     std::cout << "key : " << it->first << " | value : " << it->second << std::endl;
+     while(it != mp.end()){
+         std::cout << "key : " << it->first << " | value : " << it->second << std::endl;
+         it++;
+     }
+//     it++;
+//     std::cout << "key : " << it->first << " | value : " << it->second << " " << &it->second << std::endl;
+//     it++;
+//     std::cout << "key : " << it->first << " | value : " << it->second << " " << &it->second << std::endl;
+//     std::cout << "end : "<< &it->second << std::endl;
+
+
+//     std::cout << tmp.second << "value : " << printPair(tmp.first);
+//     std::cout << tmp2.second << "value : " << printPair(tmp2.first);
+//     std::cout << tmp3.second << "value : " << printPair(tmp3.first);
+//     std::cout << tmp4.second << "value : " << printPair(tmp4.first);
+//     std::cout << tmp5.second << "value : " << printPair(tmp5.first);
+
+//     mp._inorder();
 
  	return (0);
  }

@@ -36,12 +36,13 @@ namespace ft {
 		typedef typename allocator_type::const_reference											const_reference;
 		typedef typename allocator_type::pointer													pointer;
 		typedef typename allocator_type::const_pointer												const_pointer;
-		typedef typename ft::RbtIterator<ft::pair<const Key, T>	>									iterator;
-		typedef typename ft::RbtIterator<const ft::pair<const Key, T> >								const_iterator;
+		typedef typename ft::RbtIterator<value_type, ft::Node<const Key, T> >								iterator;
+		typedef typename ft::RbtIterator<const value_type, ft::Node<const Key, T> >						const_iterator;
 		typedef typename ft::reverse_iterator<iterator>												reverse_iterator;
 		typedef typename ft::reverse_iterator<const_iterator>										const_reverse_iterator;
 		typedef ptrdiff_t																			difference_type;
 		typedef size_t																				size_type;
+        typedef typename ft::RBTree<const key_type, mapped_type, key_compare>                       tree_type;
 
 		typedef typename ft::Node<const Key, T>* 													nodePtr;
 
@@ -49,7 +50,7 @@ namespace ft {
 
 			allocator_type											_alloc;
 			key_compare												_comp;
-			ft::RBTree<const key_type, mapped_type, key_compare>	_tree;
+			tree_type                                           	_tree;
 		
 		/*
 		##     ## ######## ##     ## ########  ######## ########     ######## ##     ## ##    ##  ######  ######## ####  #######  ##    ##  ######
@@ -65,14 +66,14 @@ namespace ft {
 
 		public:
 		
-		explicit map (const key_compare& comp = key_compare(), const allocator_type& alloc = allocator_type()): _alloc(alloc), _comp(comp), _tree() {};
+		explicit map (const key_compare& comp = key_compare(), const allocator_type& alloc = allocator_type()): _alloc(alloc), _comp(comp), _tree(_comp, _alloc) {};
 
 		template <class InputIterator>
-			map (InputIterator first, InputIterator last, const key_compare& comp = key_compare(), const allocator_type& alloc = allocator_type(), typename ft::enable_if<!is_integral<InputIterator>::value, InputIterator>::type* = NULL): _alloc(alloc), _comp(comp), _tree() {
+			map (InputIterator first, InputIterator last, const key_compare& comp = key_compare(), const allocator_type& alloc = allocator_type(), typename ft::enable_if<!is_integral<InputIterator>::value, InputIterator>::type* = NULL): _alloc(alloc), _comp(comp), _tree(_comp, _alloc) {
 				this->insert(first, last);
 			}
 		
-		map (const map & x): _alloc(x._alloc), _comp(x._comp), _tree() {
+		map (const map & x): _alloc(x._alloc), _comp(x._comp), _tree(x._comp, x._alloc) {
 			this->insert(x.begin(), x.end());
 		}
 
@@ -90,6 +91,11 @@ namespace ft {
 			return *this;
 		}
 
+        void _inorder()
+        {
+            this->_tree._inorder(_tree.getRoot());
+        }
+
 		/*
 		#### ######## ######## ########     ###    ########  #######  ########   ######
 		 ##     ##    ##       ##     ##   ## ##      ##    ##     ## ##     ## ##    ##
@@ -101,51 +107,43 @@ namespace ft {
 		*/
 
 		iterator begin() {
-			iterator it(this->_tree.begin()); 
-				
+			iterator it(_tree.findMin(_tree.getRoot()), _tree.getEnd());
+
 			return it;
 		}
 
 		const_iterator begin() const {
-			const_iterator it(this->_tree.begin()); 
-				
+			const_iterator it(_tree.findMin(_tree.getRoot()), _tree.getEnd());
+
 			return it;
-		}
+			}
 
 		iterator end() {
-			iterator it(NULL, this->_tree.end()); 
-				
+			iterator it(_tree.getEnd(), _tree.getEnd());
+
 			return it;
 		}
 
 		const_iterator end() const {
-			const_iterator it(NULL, this->_tree.end()); 
-				
+			const_iterator it(_tree.getEnd(), _tree.getEnd());
+
 			return it;
 		}
 
 		reverse_iterator rbegin() {
-			reverse_iterator it(this->end()); 
-				
-			return it;
+            return (end());
 		}
 		
 		const_reverse_iterator rbegin() const {
-			const_reverse_iterator it(this->end()); 
-				
-			return it;
+            return (end());
 		}
 
 		reverse_iterator rend() {
-			reverse_iterator it(this->begin()); 
-				
-			return it;
+            return (begin());
 		}
 
 		const_reverse_iterator rend() const {
-			const_reverse_iterator it(this->begin()); 
-				
-			return it;
+            return (begin());
 		}
 
 		/*
@@ -197,43 +195,37 @@ namespace ft {
 		*/
 
 		pair<iterator, bool> insert(const value_type& val) {
-            iterator it = this->_tree.search_(val.first);
-            bool ret = true;
-
-            if (it == this->end())
+            iterator	it(_tree.insert(val), _tree.getEnd());
+            if (it.getNode()->d_black)
             {
-//                std::cout << "inserting" << std::endl;
-                this->_tree.insert(val);
-                iterator it_ret(this->find(val.first));
-                return (pair<iterator,bool>(it_ret, ret));
+                it.getNode()->d_black = false;
+                return (ft::make_pair(it, false));
             }
-            else
-                ret = false;
-            return (pair<iterator,bool>(it, ret));
+            return (ft::make_pair(it, true));
 		}
 
 		iterator insert(iterator position, const value_type& val) {
-			(void)position;
-			ft::pair<iterator, bool> it = this->insert(val);
-			return it.first;
+			static_cast<void>(position);
+            ft::pair<iterator, bool>	p = insert(val);
+            if (p.second == false)
+                return (p.first);
+            return (p.first);
 		}
 
 		template<class InputIterator>
 			void	insert(InputIterator first, InputIterator last) {
 				while (first != last) {
-					this->insert(*first);
+					insert(*first);
 					first++;
 				}
 			}
 
 		void	erase(iterator position) {
-			
-			nodePtr to_find = this->_tree.search_(position->first);
-			this->_tree.deleteNode(to_find->value->first);
+            erase(position->first);
 		}
 
 		size_type erase(const key_type& k) {
-			if (this->_tree.deleteNode(k))
+			if (!empty() && this->_tree.deleteNode(k))
 				return 1;
 			return 0;
 		}
@@ -260,7 +252,7 @@ namespace ft {
 		}
 
 		void	clear() {
-			this->_tree.clear();
+			this->_tree.clear(_tree.getRoot());
 		}
 
 		/*
@@ -314,39 +306,43 @@ namespace ft {
 		*/
 
 		iterator find(const key_type& k) {
-			nodePtr tmp = this->_tree.search_(k);
+            iterator it = this->begin();
 
-			if (tmp) {
-				iterator it(tmp);
-				return it;
-			}
-			iterator it = this->end();
-			return it;
+            while (it != this->end() && it->first != k)
+                it++;
+            return it;
+//			nodePtr tmp = this->_tree.search_(k);
+//
+//			if (tmp) {
+//				iterator it(tmp);
+//				return it;
+//			}
+//			iterator it = this->end();
+//			return it;
 		}
 
 		const_iterator find(const key_type& k) const {
-			nodePtr tmp = this->_tree.search_(k);
+            const_iterator it = this->begin();
 
-			if (tmp) {
-				const_iterator it(tmp);
-				return it;
-			}
-			const_iterator it = this->end();
-			return it;
+            while (it != this->end() && it->first != k)
+                it++;
+            return it;
 		}
 
 		size_type count(const key_type& k) const {
 			nodePtr toFind = this->_tree.search_(k);
-            if (toFind->value->first == k)
-				return 1;
+
+            if (toFind->value.first == k) {
+                return 1;
+            }
 			return 0;
 		}
 
 		iterator lower_bound(const key_type& k) {
-			iterator it = this->_tree.begin();
+			iterator it = begin();
 
 			while (it != this->end()) {
-				if (this->_comp((*it).first, k))
+				if (this->_comp(it->first, k))
 					return it;
 				it++;
 			}
@@ -354,10 +350,10 @@ namespace ft {
 		}
 
 		const_iterator lower_bound(const key_type& k) const {
-			iterator it = this->_tree.begin();
+			const_iterator it = begin();
 
 			while (it != this->end()) {
-				if (this->_comp((*it).first, k))
+				if (this->_comp(it->first, k))
 					return it;
 				it++;
 			}
@@ -365,7 +361,7 @@ namespace ft {
 		}
 
 		iterator upper_bound(const key_type& k) {
-			iterator it = this->_tree.begin();
+			iterator it = begin();
 
 			while (it != this->end()) {
 				if (this->_comp(k, (*it).first))
@@ -376,7 +372,7 @@ namespace ft {
 		}
 
 		const_iterator upper_bound(const key_type& k) const {
-			iterator it = this->_tree.begin();
+			const_iterator it = begin();
 
 			while (it != this->end()) {
 				if (this->_comp(k, (*it).first))

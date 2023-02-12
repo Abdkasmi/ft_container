@@ -3,207 +3,182 @@
 #include <iostream>
 #include "node.hpp"
 #include "Iterator.hpp"
-//#include "rb_tree.hpp"
 #include <stdexcept>
 #include <functional>
 
 class Node;
 namespace ft {
 
-    template< class T2 > struct remove_const                { typedef T2 type; };
-	template< class T2 > struct remove_const<const T2>       { typedef T2 type; };
-
-    template<class T>
+    template<class T, class Node>
     class RbtIterator {
 
         public :
 
-            typedef	typename T::first_type				                        first;
-			typedef	typename T::second_type			                        	second;
-			typedef typename ft::iterator<RbtIterator, T>::iterator_category	iterator_category;
-			typedef typename ft::iterator<RbtIterator, T>::value_type			value_type;
-			typedef typename ft::iterator<RbtIterator, T>::difference_type		difference_type;
-			typedef typename ft::iterator<RbtIterator, T>::pointer				pointer;
-			typedef typename ft::iterator<RbtIterator, T>::reference			reference;
+            typedef	T				                                    value_type;
+			typedef Node                                                nodePtr;
+			typedef value_type*                                         pointer;
+			typedef value_type&                                         reference;
+			typedef std::ptrdiff_t                                      difference_type;
+            typedef ft::bidirectional_iterator_tag                      iterator_category;
 
-            typedef typename ft::Node<const first, second>*                     nodePtr;
-            
-            RbtIterator(): _node(NULL), _end(NULL) {}
+            RbtIterator(): _node(NULL), _end(NULL) {};
 
-            RbtIterator(nodePtr node): _node(node), _end(NULL) {}
+            RbtIterator(nodePtr* node, nodePtr* end): _node(node), _end(end) {};
 
-            RbtIterator(nodePtr node, nodePtr end): _node(node), _end(end) {}
-
-            RbtIterator(const RbtIterator<typename remove_const<T>::type> & ref) : _node(ref._node), _end(ref._end) {}
+            RbtIterator(const RbtIterator<value_type, nodePtr> & ref) : _node(ref._node), _end(ref._end) {};
 
             RbtIterator&    operator=(const RbtIterator& x) {
-                this->_node = x._node;
-                this->_end = x._end;
+                this->_node = x.getNode();
+                this->_end = x.getEnd();
                 return *this;
             }
 
             ~RbtIterator() {};
 
+            operator RbtIterator<const value_type, nodePtr>(void) const {
+                return RbtIterator<const value_type, nodePtr>(_node, _end);
+            }
+
             RbtIterator &operator++() { // ++it
-                nodePtr p;
-                if (this->_node == NULL) { // if !node => trying ++ from end(), we go to the root
-                    this->_end = this->_node;
-//                    this->_node = ft::RBTree<const first, second>::getRoot();
-                    if (this->_node == NULL) // tree is empty
-                        throw std::underflow_error("Underflow error !");
-                    while (this->_node->left) // go to the smallest value in the tree (first inorder node)
-                        this->_node = this->_node->left;
-                }
-                else {
-                    if (this->_node->right) { // looking for the next successor => one right then farthest ppossible on the left
-                        this->_node = this->_node->right;
-                        while (this->_node->left)
-                            this->_node = this->_node->left;
-                    }
-                    else { // we went already through the left-subtree and there is no right-subtree => we move up looking for a P for wich _node is a left child
-                        // A non NULL P is the successor, if P is NULL the successor is the end
-                        p = this->_node->parent;
-                        while (p && this->_node == p->right) {
-                            this->_node = p;
-                            p = p->parent;
-                        }
-                        this->_node = p;
-                    }
-                }
+				_node = increment(_node);
                 return *this;
             }
 
             RbtIterator operator++(int) { // it++
-                RbtIterator this_tmp = *this;
-                ++(*this);
-                return this_tmp;
+                nodePtr* this_tmp = _node;
+                _node = increment(_node);
+                return (RbtIterator(this_tmp, _end));
             }
 
             RbtIterator &operator--() { // --it
-                nodePtr p;
-                if (this->_node == NULL) { // if _node == NULL trying to -- from root, we go to root
-                    this->_end = this->_node;
-//                    this->_node = ft::RBTree<const first, second>::getRoot();
-                    if (this->_node == NULL) // tree is empty
-                        throw std::underflow_error("Underflow caught");
-//                    this->_node = ft::RBTree<const first, second>::findMax(this->_node); // get biggest value
-                }
-                else {
-                    if (this->_node->left) {
-                        this->_node = this->_node->left; // looking for next successor
-                        while (this->_node->right)
-                            this->_node = this->_node->left;
-                    }
-                    else {
-                        p = this->_node->parent;
-                        while (p && this->_node == p->left) {
-                            this->_node = p;
-                            p = p->parent;
-                        }
-                        this->_node = p;
-                    }
-                }
+                _node = decrement(_node);
                 return *this;
             }
 
             RbtIterator operator--(int) { // it--
-                RbtIterator tmp(*this);
-                --(*this);
-                return (tmp);
+                nodePtr* this_tmp = _node;
+                _node = decrement(_node);
+                return (RbtIterator(this_tmp, _end));
             }
 
-            nodePtr getNode() const {
+            nodePtr* getNode() const {
                 return this->_node;
             }
 
-            nodePtr getEnd() const {
+            nodePtr* getEnd() const {
                 return this->_end;
             }
 
-            void    setBase(nodePtr tmp) {
-                this->_node = tmp;
-            }
-
-            nodePtr base() const {
-                return this->_node;
-            }
-
             value_type	&operator*() const {
-                return *(this->_node->value);
-            }
-
-			value_type	*operator->() const {
                 return (this->_node->value);
             }
 
-            nodePtr greatest(nodePtr ptr) const {
-                while (ptr->right != _end)
-                    ptr = ptr->right;
-                return ptr;
+			value_type	*operator->() const {
+                return (&this->_node->value);
             }
 
-            nodePtr smallest(nodePtr ptr) const {
-                while (ptr->left != _end)
-                    ptr = ptr->left;
-                return ptr;
+            nodePtr* increment(nodePtr* node) {
+                nodePtr* node_ = node;
+                if (node_->right != _end) {
+                    node_ = node_->right;
+                    while (node_->left != _end) {
+                        node_ = node_->left;
+                    }
+                } else {
+                    nodePtr *parent = node_->parent;
+                    while (parent != _end && node_ == parent->right) {
+                        node_ = parent;
+                        parent = node_->parent;
+                        std::cout << &parent->right << " end : " << &_end << std::endl;
+                        if (parent == _end) {
+                            break;
+                        }
+                    }
+                    if (parent != _end)
+                        node_ = parent;
+                    else
+                        node_ = _end;  // set the iterator to the end
+                }
+                return node_;
             }
+
+            nodePtr *decrement(nodePtr* node) {
+                nodePtr *node_ = node;
+                if (node_ == _end)
+                    return _end;
+                if (node_->left != _end) {
+                    node_ = node_->left;
+                    while (node_->right != _end)
+                        node_ = node_->right;
+                }
+                else {
+                    nodePtr *parent = node_->parent;
+                    while (parent != _end && node_ == parent->left) {
+                        node_ = parent;
+                        parent = node_->parent;
+                    }
+                    if (parent != _end)
+                        node_ = parent;
+                    else
+                        node_ = _end;  // set the iterator to the beginning
+                }
+                return node_;
+                }
 
         public :
 
-
-            nodePtr _node;
-            nodePtr _end;
-
+            nodePtr* _node;
+            nodePtr* _end;
     };
 
-    template < typename IteratorL, typename IteratorR >
-		bool operator==(RbtIterator<IteratorL> const &lhs, RbtIterator<IteratorR> const &rhs)
+    template < typename ItL_T,typename ItR_T, typename ItL_N, typename ItR_N >
+		bool operator==(RbtIterator<ItL_T, ItL_N> const &lhs, RbtIterator<ItR_T, ItR_N> const &rhs)
 		{
-			return (lhs.base() == rhs.base());
+			return (lhs.getNode() == rhs.getNode());
 		}
 
-	template < typename IteratorL, typename IteratorR >
-		bool operator!=(RbtIterator<IteratorL> const &lhs, RbtIterator<IteratorR> const &rhs)
+	template < typename ItL_T,typename ItR_T, typename ItL_N, typename ItR_N >
+		bool operator!=(RbtIterator<ItL_T, ItL_N>const &lhs, RbtIterator<ItR_T, ItR_N> const &rhs)
 		{
-			return (!(lhs.base() == rhs.base()));
+			return (!(lhs.getNode() == rhs.getNode()));
 		}
-
-	template < typename IteratorL, typename IteratorR >
-		bool operator<(RbtIterator<IteratorL> const &lhs, RbtIterator<IteratorR> const &rhs)
-		{
-			return (lhs.base() < rhs.base());
-		}
-
-	template < typename IteratorL, typename IteratorR >
-		bool operator>(RbtIterator<IteratorL> const &lhs, RbtIterator<IteratorR> const &rhs)
-		{
-			return (rhs.base() < lhs.base());
-		}
-
-	template < typename IteratorL, typename IteratorR >
-		bool operator<=(RbtIterator<IteratorL> const &lhs, RbtIterator<IteratorR> const &rhs)
-		{
-			return (!(rhs.base() < lhs.base()));
-		}
-
-	template < typename IteratorL, typename IteratorR >
-		bool operator>=(RbtIterator<IteratorL> const &lhs, RbtIterator<IteratorR> const &rhs)
-		{
-			return (!(lhs.base() < rhs.base()));
-		}
-
-	// arithmetic operators
-
-	template < typename Iterator >
-		RbtIterator<Iterator> operator+(typename RbtIterator<Iterator>::difference_type n, RbtIterator<Iterator> const &rhs)
-		{
-			return (rhs.base() + n);
-		}
-
-	template < typename IteratorL, typename IteratorR >
-		typename RbtIterator<IteratorL>::difference_type operator-(RbtIterator<IteratorL> const &lhs, RbtIterator<IteratorR> const &rhs)
-		{
-			return (lhs.base() - rhs.base());
-		}
+//
+//	template < typename IteratorL, typename IteratorR >
+//		bool operator<(RbtIterator<IteratorL> const &lhs, RbtIterator<IteratorR> const &rhs)
+//		{
+//			return (lhs.base() < rhs.base());
+//		}
+//
+//	template < typename IteratorL, typename IteratorR >
+//		bool operator>(RbtIterator<IteratorL> const &lhs, RbtIterator<IteratorR> const &rhs)
+//		{
+//			return (rhs.base() < lhs.base());
+//		}
+//
+//	template < typename IteratorL, typename IteratorR >
+//		bool operator<=(RbtIterator<IteratorL> const &lhs, RbtIterator<IteratorR> const &rhs)
+//		{
+//			return (!(rhs.base() < lhs.base()));
+//		}
+//
+//	template < typename IteratorL, typename IteratorR >
+//		bool operator>=(RbtIterator<IteratorL> const &lhs, RbtIterator<IteratorR> const &rhs)
+//		{
+//			return (!(lhs.base() < rhs.base()));
+//		}
+//
+//	 arithmetic operators
+//
+//	template < typename Iterator >
+//		RbtIterator<Iterator> operator+(typename RbtIterator<Iterator>::difference_type n, RbtIterator<Iterator> const &rhs)
+//		{
+//			return (rhs.base() + n);
+//		}
+//
+//	template < typename IteratorL, typename IteratorR >
+//		typename RbtIterator<IteratorL>::difference_type operator-(RbtIterator<IteratorL> const &lhs, RbtIterator<IteratorR> const &rhs)
+//		{
+//			return (lhs.base() - rhs.base());
+//		}
 
 }

@@ -1,7 +1,7 @@
 #pragma once
 
 #include <iostream>
-
+#include <functional>
 namespace ft {
     
     /*
@@ -113,4 +113,6 @@ namespace ft {
         struct is_integral<unsigned long int> : public true_type{};
     template <>
         struct is_integral<unsigned long long int> : public true_type{};
+
+
 }

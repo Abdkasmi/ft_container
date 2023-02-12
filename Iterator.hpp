@@ -74,7 +74,9 @@ namespace ft {
 
 			reverse_iterator(): _it() {};
 			
-			explicit reverse_iterator (iterator_type it): _it(it) {};
+			reverse_iterator (iterator_type it): _it(it) {};
+
+            reverse_iterator(pointer it) : _it(iterator_type(it)) {};
 			
 			template <class Iter>
 				reverse_iterator (const reverse_iterator<Iter>& rev_it): _it(rev_it.base()) {};
@@ -87,9 +89,9 @@ namespace ft {
 
 			// Overload operators
 
-				operator reverse_iterator<const Iterator>() const
+				operator reverse_iterator<const iterator_type>() const
 				{
-					return this->current;
+					return this->_it;
 				}
 
 				// Dereference operator
@@ -103,7 +105,7 @@ namespace ft {
 					return &(operator*());
 				}
 
-				reference operator[] (difference_type n) const {	
+				reference operator[] (difference_type n) const {
 						return (*(*this + n));
 				}
 
@@ -135,13 +137,13 @@ namespace ft {
 				// Decrementation iterator (pre and post --)
 
 				reverse_iterator	&operator--() { // pre
-					++this->_it;
+					++_it;
 					return *this;
 				}
 
 				reverse_iterator	operator--(int) { //post
 					reverse_iterator tmp(*this);
-					operator--();
+					--_it;
 					return tmp;
 				}
 
