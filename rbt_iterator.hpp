@@ -78,52 +78,58 @@ namespace ft {
             }
 
             nodePtr* increment(nodePtr* node) {
-                nodePtr* node_ = node;
-                if (node_->right != _end) {
-                    node_ = node_->right;
-                    while (node_->left != _end) {
-                        node_ = node_->left;
-                    }
-                } else {
-                    nodePtr *parent = node_->parent;
-                    while (parent != _end && node_ == parent->right) {
-                        node_ = parent;
-                        parent = node_->parent;
-                        std::cout << &parent->right << " end : " << &_end << std::endl;
-                        if (parent == _end) {
-                            break;
-                        }
-                    }
-                    if (parent != _end)
-                        node_ = parent;
-                    else
-                        node_ = _end;  // set the iterator to the end
+                nodePtr	*tmp = node;
+                while (tmp->parent)
+                    tmp = tmp->parent;
+                if (node == _end)
+                    return (greatest(tmp));
+                if (node->right == _end)
+                {
+                    tmp = node;
+                    while (tmp->parent && tmp == tmp->parent->right)
+                        tmp = tmp->parent;
+                    tmp = tmp->parent;
+                    if (!tmp)
+                        return _end;
+                    return tmp;
                 }
-                return node_;
+                tmp = node->right;
+                while (tmp->left != _end)
+                    tmp = tmp->left;
+                if (!tmp)
+                    return _end;
+                return tmp;
+            }
+
+            nodePtr* greatest(nodePtr* cur) {
+                while (cur->right != _end)
+                    cur = cur->right;
+                return cur;
             }
 
             nodePtr *decrement(nodePtr* node) {
-                nodePtr *node_ = node;
-                if (node_ == _end)
+                nodePtr	*tmp = node;
+                while (tmp->parent)
+                    tmp = tmp->parent;
+                if (node == _end)
+                    return (greatest(tmp));
+                if (node->left == _end)
+                {
+                    tmp = node;
+                    while (tmp->parent && tmp == tmp->parent->left)
+                        tmp = tmp->parent;
+                    tmp = tmp->parent;
+                    if (!tmp)
+                        return _end;
+                    return tmp;
+                }
+                tmp = node->left;
+                while (tmp->right != _end)
+                    tmp = tmp->right;
+                if (!tmp)
                     return _end;
-                if (node_->left != _end) {
-                    node_ = node_->left;
-                    while (node_->right != _end)
-                        node_ = node_->right;
-                }
-                else {
-                    nodePtr *parent = node_->parent;
-                    while (parent != _end && node_ == parent->left) {
-                        node_ = parent;
-                        parent = node_->parent;
-                    }
-                    if (parent != _end)
-                        node_ = parent;
-                    else
-                        node_ = _end;  // set the iterator to the beginning
-                }
-                return node_;
-                }
+                return tmp;
+            }
 
         public :
 

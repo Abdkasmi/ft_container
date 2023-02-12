@@ -39,7 +39,7 @@ namespace ft {
             }
 
             ~RBTree() {
-                std::cout << "hello" <<std::endl;
+//                std::cout << "hello" <<std::endl;
                 clear(root);
                 deallocateNode(_end);
             }
@@ -420,6 +420,20 @@ namespace ft {
 
             nodePtr end() const {
                 return (this->_end);
+            }
+
+            void swap(RBTree &x) {
+                nodePtr root_ = x.root;
+                nodePtr end = x._end;
+                size_t s = x.size;
+
+                x.root = root;
+                x._end = _end;
+                x.size = size;
+
+                root = root_;
+                _end = end;
+                size = s;
             }
     };
 }

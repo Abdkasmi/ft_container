@@ -238,17 +238,7 @@ namespace ft {
 		}
 
 		void	swap(map& x){
-			allocator_type											alloc = this->_alloc;
-			key_compare												comp = this->_comp;
-			ft::RBTree<const key_type, mapped_type, key_compare>	tree = this->_tree;
-
-			this->_alloc = x._alloc;
-			this->_comp = x._comp;
-			this->_tree = x._tree;
-
-			x._alloc = alloc;
-			x._comp = comp;
-			x._tree = tree;
+			_tree.swap(x._tree);
 		}
 
 		void	clear() {
@@ -311,14 +301,6 @@ namespace ft {
             while (it != this->end() && it->first != k)
                 it++;
             return it;
-//			nodePtr tmp = this->_tree.search_(k);
-//
-//			if (tmp) {
-//				iterator it(tmp);
-//				return it;
-//			}
-//			iterator it = this->end();
-//			return it;
 		}
 
 		const_iterator find(const key_type& k) const {
@@ -339,47 +321,51 @@ namespace ft {
 		}
 
 		iterator lower_bound(const key_type& k) {
-			iterator it = begin();
+			iterator it = find(k);
 
-			while (it != this->end()) {
-				if (this->_comp(it->first, k))
-					return it;
-				it++;
-			}
+            if (it != end())
+                return it;
+            if (_comp(k, _tree.findMin(_tree.getRoot())->value.first))
+                return iterator(_tree.findMin(_tree.getRoot()), _tree.getEnd());
+            if (_comp(_tree.findMax(_tree.getRoot())->value.first, k))
+                return end();
 			return this->end();
 		}
 
 		const_iterator lower_bound(const key_type& k) const {
-			const_iterator it = begin();
+			const_iterator it = find(k);
 
-			while (it != this->end()) {
-				if (this->_comp(it->first, k))
-					return it;
-				it++;
-			}
-			return this->end();
+            if (it != end())
+                return it;
+            if (_comp(k, _tree.findMin(_tree.getRoot())->value.first))
+                return iterator(_tree.findMin(_tree.getRoot()), _tree.getEnd());
+            if (_comp(_tree.findMax(_tree.getRoot())->value.first, k))
+                return end();
+            return this->end();
 		}
 
 		iterator upper_bound(const key_type& k) {
-			iterator it = begin();
+			iterator it = find(k);
 
-			while (it != this->end()) {
-				if (this->_comp(k, (*it).first))
-					return it;
-				it++;
-			}
-			return this->end();
+            if (it != end())
+                return it++;
+            if (_comp(k, _tree.findMin(_tree.getRoot())->value.first))
+                return iterator(_tree.findMin(_tree.getRoot()), _tree.getEnd());
+            if (_comp(_tree.findMax(_tree.getRoot())->value.first, k))
+                return end();
+            return this->end();
 		}
 
 		const_iterator upper_bound(const key_type& k) const {
-			const_iterator it = begin();
+			const_iterator it = find(k);
 
-			while (it != this->end()) {
-				if (this->_comp(k, (*it).first))
-					return it;
-				it++;
-			}
-			return this->end();
+            if (it != end())
+                return it++;
+            if (_comp(k, _tree.findMin(_tree.getRoot())->value.first))
+                return iterator(_tree.findMin(_tree.getRoot()), _tree.getEnd());
+            if (_comp(_tree.findMax(_tree.getRoot())->value.first, k))
+                return end();
+            return this->end();
 		}
 
 		pair<iterator, iterator> equal_range(const key_type& k) {
