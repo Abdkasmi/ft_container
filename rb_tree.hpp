@@ -3,6 +3,7 @@
 #include <iostream>
 #include <memory>
 #include <functional>
+#include <stdexcept>
 #include "Utils.hpp"
 #include "Pair.hpp"
 #include "node.hpp"
@@ -20,8 +21,8 @@ namespace ft {
             typedef Compare																   key_compare;
             typedef std::allocator<ft::pair<const Key, T> >                                Alloc;
             typedef std::allocator<ft::Node<Key, T> >                                      node_alloc;
-//            typedef typename ft::RbtIterator<ft::pair<const Key, T>, ft::Node<const Key, T>	>          iterator;
-//            typedef typename ft::RbtIterator<const ft::pair<const Key, T> >                         const_iterator;
+            typedef typename ft::RbtIterator<ft::pair<const Key, T>, ft::Node<const Key, T>	>          iterator;
+            typedef typename ft::RbtIterator<const ft::pair<const Key, T>, ft::Node<const Key, T> >     const_iterator;
 
     private:
             nodePtr     root;
@@ -39,7 +40,6 @@ namespace ft {
             }
 
             ~RBTree() {
-//                std::cout << "hello" <<std::endl;
                 clear(root);
                 deallocateNode(_end);
             }
@@ -59,16 +59,9 @@ namespace ft {
             void update_end(void) {
                 alloc.destroy(&_end->value);
                 alloc.construct(&_end->value, ft::make_pair(size, T()));
+                if (root != _end)
+                    _end->parent = root;
             }
-
-        void _inorder(nodePtr p_root)
-        {
-            if (!p_root)
-                return;
-            _inorder(p_root->left);
-            std::cout << "inorder == " << p_root->value.first << " " << p_root->value.second << std::endl;
-            _inorder(p_root->right);
-        }
 
             void    deallocateNode(nodePtr del) {
                 if (del == root)
@@ -109,11 +102,11 @@ namespace ft {
                     to_find->d_black = true;
                     return to_find;
                 }
-                this->size++;
-//                update_end();
                 if (this->root == _end) {
                     this->root = this->NewNode(val, NULL);
                     this->root->color = black;
+                    this->size++;
+                    update_end();
                     return (root);
                 }
                 if (this->comp(to_find->value.first, val.first)) {
@@ -124,6 +117,8 @@ namespace ft {
                     to_find->left = this->NewNode(val, to_find);
                     to_find = this->insert_balance(to_find->left);
                 }
+                this->size++;
+                update_end();
                 return to_find;
             }
 
@@ -161,120 +156,192 @@ namespace ft {
                 return val;
             }
 
-            bool    deleteNode(Key key) {
-                nodePtr del = this->search_(key);
-
-                if (del->value.first != key)
-                    return false;
-                this->size--;
-                update_end();
-                if (del->left == _end && del->right == _end) {
-                    if (del->color == red && this->root == del) {
-                        this->deallocateNode(del);
-                    } else {
-                        nodePtr db = this->NewNode(value_type(), del->parent);
-                        db->color = black;
-                        db->d_black = true;
-                        bool	l_or_r = del == del->parent->left;
-                        this->deallocateNode(del);
-                        l_or_r ? db->parent->left = db : db->parent->right = db;
-                        balance_deleteNode(db);
-                    }
+            void deleteNode(const key_type k) {
+                nodePtr node = search_(k);
+                if (node == _end)
+                    return ;
+                nodePtr moveUp;
+                Color delNodeColor;
+                if (node->left == _end || node->right == _end) {
+                    delNodeColor = node->color;
+                    moveUp = delZeroOne(node);
                 }
                 else {
-                    nodePtr tmp = del->left != _end ? findMax(del->left) : findMin(del->right);
-                    if (tmp->left != _end || tmp->right != _end) {
-                        if (tmp->left != _end) {
-                            switch_color(tmp->left);
-                            tmp->left->parent = tmp->parent;
-                            tmp == tmp->parent->left ? tmp->parent->left = tmp->left : tmp->parent->right = tmp->left;
-                        }
-                        else {
-                            switch_color(tmp->right);
-                            tmp->right->parent = tmp->parent;
-                            tmp == tmp->parent->left ? tmp->parent->left = tmp->right : tmp->parent->right = tmp->right;
-                        }
-                        copy_node(del, tmp);
-                    }
-                    else {
-                        if (tmp->color == red) {
-                            tmp == tmp->parent->left ? tmp->parent->left = _end : tmp->parent->right = _end;
-                            copy_node(del, tmp);
-                        }
-                        else {
-                            nodePtr db = this->NewNode(value_type(), tmp->parent);
-                            db->color = black;
-                            db->d_black = true;
-                            tmp == tmp->parent->left ? tmp->parent->left = db : tmp->parent->right = db;
-                            copy_node(del, tmp);
-                            balance_deleteNode(db);
-                        }
+                    nodePtr inorderSuccessor = findMin(node->right);
+                    alloc.destroy(&node->value);
+                    alloc.construct(&node->value, inorderSuccessor->value);
+
+//                    nodePtr newN = NewNode(inorderSuccessor->value, node->parent);
+//                    newN->color = node->color;
+//                    if (node->parent && node == node->parent->left)
+//                        node->parent->left = newN;
+//                    else if (node->parent && node == node->parent->right)
+//                        node->parent->right = newN;
+//                    newN->left = node->left;
+//                    newN->right = node->right;
+//                    if (newN->left != _end)
+//                        newN->left->parent = newN;
+//                    if (newN->right != _end)
+//                        newN->right->parent = newN;
+//                    deallocateNode(node);
+
+                    delNodeColor = inorderSuccessor->color;
+                    moveUp = delZeroOne(inorderSuccessor);
+                }
+                if (delNodeColor == black) {
+                    fixRedBlackDelete(moveUp);
+                    if (moveUp != _end) {
+                        replaceParentChild(moveUp->parent, moveUp, _end);
                     }
                 }
-                return true;
+                size--;
+                update_end();
             }
 
-        void	copy_node(nodePtr a, nodePtr b)
-        {
-            if (a != root)
-                a == a->parent->left ? a->parent->left = b : a->parent->right = b;
-            else
-                root = b;
-            b->parent = a->parent;
-            b->left = a->left;
-            b->right = a->right;
-            if (b->left != _end)
-                b->left->parent = b;
-            if (b->right != _end)
-                b->right->parent = b;
-            b->color = a->color;
-            alloc.destroy(&a->value);
-            p_alloc.deallocate(a, 1);
-            a = _end;
-        }
+            nodePtr delZeroOne(nodePtr node) {
+                nodePtr tmp;
+                if (node->left != _end) { // Node has ONLY a left child --> replace by its left child
+                    tmp = node->left;
+                    replaceParentChild(node->parent, node, node->left);
+                    return tmp;
+                }
+                else if (node->right != _end) {   // Node has ONLY a right child --> replace by its right child
+                    tmp = node->right;
+                    replaceParentChild(node->parent, node, node->right);
+                    return tmp;
+                }
+                // Node has no children -->
+                // * node is red --> just remove it
+                // * node is black --> replace it by a temporary NIL node (needed to fix the R-B rules)
+                else {
+                    nodePtr new_child;
+                    if (node->color == black) {
+                        new_child = this->NewNode(value_type(), node->parent);
+                        new_child->color = black;
+                    }
+                    else
+                        new_child = _end;
+                    replaceParentChild(node->parent, node, new_child);
+                    return new_child;
+                }
+            }
 
-            void    balance_deleteNode(nodePtr val) {
-                if (val == root) {
-                    val->color = black;
+            void replaceParentChild(nodePtr parent, nodePtr oldChild, nodePtr newChild) {
+                if (parent == NULL) {
+                    root = newChild;
+                } else if (parent->left == oldChild) {
+                    parent->left = newChild;
+                    if (oldChild != _end)
+                        deallocateNode(oldChild);
+                } else if (parent->right == oldChild) {
+                    parent->right = newChild;
+                    if (oldChild != _end)
+                        deallocateNode(oldChild);
+                } else {
+                    throw std::length_error("Node is not a child of its parent");
+                }
+                if (newChild != _end) {
+                    newChild->parent = parent;
+                }
+            }
+
+            void fixRedBlackDelete(nodePtr node) {
+                // Case 1: Examined node is root, end of recursion
+                if (node == root) {
                     return ;
                 }
-                nodePtr sibling = get_sibling(val);
+                nodePtr sibling = get_sibling(node);
+                // Case 2: Red sibling
                 if (sibling->color == red) {
-                    sibling->color = val->parent->color;
-                    val->parent->color = red;
-                    val == val->parent->left ? left_rotation(val->parent) : right_rotation(val->parent);
-                    balance_deleteNode(val);
+                    handleRedSibling(node, sibling);
+                    sibling = get_sibling(node); // Get new sibling for fall-through to cases 3-6
                 }
-                else {
-                    nodePtr far_child = get_far_child(val);
-                    if (far_child != _end && far_child->color == red) {
-                        sibling->color = val->parent->color;
-                        val->parent->color = black;
-                        val == val->parent->left ? left_rotation(val->parent) : right_rotation(val->parent);
-                        if (val->d_black)
-                            this->deallocateNode(val);
-                        far_child->color = black;
+                // Cases 3+4: Black sibling with two black children
+                if (isBlack(sibling->left) && isBlack(sibling->right)) {
+                    sibling->color = red;
+                    // Case 3: Black sibling with two black children + red parent
+                    if (node->parent->color == red) {
+                        node->parent->color = black;
                     }
+                        // Case 4: Black sibling with two black children + black parent
                     else {
-                        nodePtr near_child = get_near_child(val);
-                        if (near_child == _end && near_child->color == red) {
-                            near_child->color = sibling->color;
-                            sibling->color = red;
-                            val == val->parent->left ? right_rotation(sibling) : left_rotation(sibling);
-                            balance_deleteNode(val);
-                        }
-                        else {
-                            if (val->d_black)
-                                deallocateNode(val);
-                            sibling->color = red;
-                            if (val->parent->color == black)
-                                balance_deleteNode(val->parent);
-                            else
-                                val->parent->color = black;
-                        }
+                        fixRedBlackDelete(node->parent);
                     }
+                }
+                    // Case 5+6: Black sibling with at least one red child
+                else {
+                    handleBlackSiblingWithAtLeastOneRedChild(node, sibling);
                 }
             }
+
+            void handleRedSibling(nodePtr node, nodePtr sibling) {
+                // Recolor...
+                sibling->color = black;
+                node->parent->color = red;
+
+                // ... and rotate
+                if (node == node->parent->left) {
+                    left_rotation(node->parent);
+                } else {
+                    right_rotation(node->parent);
+                }
+            }
+
+            bool isBlack(nodePtr node) {
+                return node == _end || node->color == black;
+            }
+
+            void handleBlackSiblingWithAtLeastOneRedChild(nodePtr node, nodePtr sibling) {
+                bool nodeIsLeftChild = node == node->parent->left;
+
+                // Case 5: Black sibling with at least one red child + "outer nephew" is black
+                // --> Recolor sibling and its child, and rotate around sibling
+                if (nodeIsLeftChild && isBlack(sibling->right)) {
+                    sibling->left->color = black;
+                    sibling->color = red;
+                    right_rotation(sibling);
+                    sibling = node->parent->right;
+                } else if (!nodeIsLeftChild && isBlack(sibling->left)) {
+                    sibling->right->color = black;
+                    sibling->color = red;
+                    left_rotation(sibling);
+                    sibling = node->parent->left;
+                }
+
+                // Fall-through to case 6...
+
+                // Case 6: Black sibling with at least one red child + "outer nephew" is red
+                // --> Recolor sibling + parent + sibling's child, and rotate around parent
+                sibling->color = node->parent->color;
+                node->parent->color = black;
+                if (nodeIsLeftChild) {
+                    sibling->right->color = black;
+                    left_rotation(node->parent);
+                } else {
+                    sibling->left->color = black;
+                    right_rotation(node->parent);
+                }
+            }
+
+            void	copy_node(nodePtr a, nodePtr b)
+            {
+                if (a != root)
+                    a == a->parent->left ? a->parent->left = b : a->parent->right = b;
+                else
+                    root = b;
+                b->parent = a->parent;
+                b->left = a->left;
+                b->right = a->right;
+                if (b->left != _end)
+                    b->left->parent = b;
+                if (b->right != _end)
+                    b->right->parent = b;
+                b->color = a->color;
+                alloc.destroy(&a->value);
+                p_alloc.deallocate(a, 1);
+                a = _end;
+            }
+
 
             nodePtr getUncle(nodePtr node) const {
                 if (node == this->root || node->parent == this->root || node == _end)
@@ -283,20 +350,6 @@ namespace ft {
                     return node->parent->parent->right;
                 else
                     return node->parent->parent->left;
-            }
-
-            nodePtr get_far_child(nodePtr node) const
-            {
-                if (node == node->parent->right)
-                    return (node->parent->left->left);
-                return (node->parent->right->right);
-            }
-
-            nodePtr	get_near_child(nodePtr node) const
-            {
-                if (node == node->parent->right)
-                    return (node->parent->left->right);
-                return (node->parent->right->left);
             }
 
             size_t getSize() const {
@@ -323,7 +376,7 @@ namespace ft {
                 return (false);
             }
 
-            void left_rotation(nodePtr& p_val) {
+            void left_rotation(nodePtr p_val) {
                 nodePtr tmp = p_val;
                 nodePtr tmp2 = tmp->right->left;
 
@@ -346,7 +399,7 @@ namespace ft {
                 tmp->parent = p_val;
             }
 
-            void right_rotation(nodePtr& val) {
+            void right_rotation(nodePtr val) {
                 nodePtr tmp = val;
                 nodePtr tmp2 = val->left->right;
                 val = val->left;
@@ -366,7 +419,6 @@ namespace ft {
             }
 
             void clear(nodePtr node) {
-//                std::cout << node->value.first << " with address : " << &node << std::endl;
                 if (node != _end) {
                     clear(node->left);
                     clear(node->right);
@@ -382,9 +434,14 @@ namespace ft {
 
             nodePtr 	get_sibling(nodePtr node) const
             {
-                if (node == node->parent->right)
-                    return (node->parent->left);
-                return (node->parent->right);
+                nodePtr parent = node->parent;
+                if (node == parent->left) {
+                    return parent->right;
+                } else if (node == parent->right) {
+                    return parent->left;
+                } else {
+                    throw std::overflow_error("Parent is not a child of its grandparent");
+                }
             }
 
             nodePtr getSuccessor(nodePtr node) { // get the inorder successor
@@ -434,6 +491,15 @@ namespace ft {
                 root = root_;
                 _end = end;
                 size = s;
+            }
+
+            void _inorder(nodePtr p_root)
+            {
+                if (p_root == _end)
+                    return;
+                _inorder(p_root->left);
+                std::cout << "inorder == " << p_root->value.first << " " << p_root->value.second << std::endl;
+                _inorder(p_root->right);
             }
     };
 }

@@ -39,6 +39,10 @@ namespace ft {
                 return RbtIterator<const value_type, nodePtr>(_node, _end);
             }
 
+            nodePtr *base() const {
+                return _node;
+            }
+
             RbtIterator &operator++() { // ++it
 				_node = increment(_node);
                 return *this;
@@ -148,43 +152,4 @@ namespace ft {
 		{
 			return (!(lhs.getNode() == rhs.getNode()));
 		}
-//
-//	template < typename IteratorL, typename IteratorR >
-//		bool operator<(RbtIterator<IteratorL> const &lhs, RbtIterator<IteratorR> const &rhs)
-//		{
-//			return (lhs.base() < rhs.base());
-//		}
-//
-//	template < typename IteratorL, typename IteratorR >
-//		bool operator>(RbtIterator<IteratorL> const &lhs, RbtIterator<IteratorR> const &rhs)
-//		{
-//			return (rhs.base() < lhs.base());
-//		}
-//
-//	template < typename IteratorL, typename IteratorR >
-//		bool operator<=(RbtIterator<IteratorL> const &lhs, RbtIterator<IteratorR> const &rhs)
-//		{
-//			return (!(rhs.base() < lhs.base()));
-//		}
-//
-//	template < typename IteratorL, typename IteratorR >
-//		bool operator>=(RbtIterator<IteratorL> const &lhs, RbtIterator<IteratorR> const &rhs)
-//		{
-//			return (!(lhs.base() < rhs.base()));
-//		}
-//
-//	 arithmetic operators
-//
-//	template < typename Iterator >
-//		RbtIterator<Iterator> operator+(typename RbtIterator<Iterator>::difference_type n, RbtIterator<Iterator> const &rhs)
-//		{
-//			return (rhs.base() + n);
-//		}
-//
-//	template < typename IteratorL, typename IteratorR >
-//		typename RbtIterator<IteratorL>::difference_type operator-(RbtIterator<IteratorL> const &lhs, RbtIterator<IteratorR> const &rhs)
-//		{
-//			return (lhs.base() - rhs.base());
-//		}
-
 }

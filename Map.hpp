@@ -157,7 +157,7 @@ namespace ft {
 		*/
 
 		bool empty() const {
-			if (this->_tree.getRoot())
+			if (this->_tree.getSize() == 0)
 				return true;
 			return false;
 		}
@@ -225,16 +225,39 @@ namespace ft {
 		}
 
 		size_type erase(const key_type& k) {
-			if (!empty() && this->_tree.deleteNode(k))
-				return 1;
+            size_t s = _tree.getSize();
+            _tree.deleteNode(k);
+			if (this->_tree.getSize() != s)
+                return 1;
 			return 0;
 		}
 
 		void	erase(iterator first, iterator last) {
-			while (first != last) {
-				erase(first);
-				first++;
-			}
+//			while (first != last) {
+//                iterator tmp = first;
+//                ++first;
+//                erase(tmp);
+//            }
+            iterator tmp = first;
+            size_type i = 0;
+            while (tmp != last) {
+                ++tmp;
+                ++i;
+            }
+            while (i > 0) { // fix derniere decrementation + affichage que des 2 derniers elements de l'arbre
+                tmp = last;
+                std::cout << "i : " << i << std::endl;
+                size_type j = 0;
+                while (j < i){
+                    std::cout << tmp->first << std::endl;
+                    --tmp;
+                    ++j;
+                    std::cout << tmp->first << std::endl;
+                }
+                std::cout << "to erase : " << tmp->first << std::endl;
+                erase(tmp);
+                --i;
+            }
 		}
 
 		void	swap(map& x){
@@ -348,7 +371,7 @@ namespace ft {
 			iterator it = find(k);
 
             if (it != end())
-                return it++;
+                return ++it;
             if (_comp(k, _tree.findMin(_tree.getRoot())->value.first))
                 return iterator(_tree.findMin(_tree.getRoot()), _tree.getEnd());
             if (_comp(_tree.findMax(_tree.getRoot())->value.first, k))
@@ -360,7 +383,7 @@ namespace ft {
 			const_iterator it = find(k);
 
             if (it != end())
-                return it++;
+                return ++it;
             if (_comp(k, _tree.findMin(_tree.getRoot())->value.first))
                 return iterator(_tree.findMin(_tree.getRoot()), _tree.getEnd());
             if (_comp(_tree.findMax(_tree.getRoot())->value.first, k))

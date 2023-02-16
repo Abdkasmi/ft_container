@@ -143,7 +143,7 @@ namespace ft {
 
 				reverse_iterator	operator--(int) { //post
 					reverse_iterator tmp(*this);
-					--_it;
+					++_it;
 					return tmp;
 				}
 

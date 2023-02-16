@@ -1,7 +1,7 @@
 #pragma once
 
 #include <iostream>
-#include "vector.hpp"
+#include "Vector.hpp"
 #include "Utils.hpp"
 
 namespace ft {
