@@ -13,9 +13,9 @@ namespace ft {
         ft::pair<const Key, T>       value;
         Color                        color;
         Node                         *left, *right, *parent;
-        bool                         d_black;
+        bool                         nil;
 
-        Node(): value(NULL), color(red), left(NULL), right(NULL), parent(NULL), d_black(false) {};
+        Node(): value(NULL), color(red), left(NULL), right(NULL), parent(NULL), nil(false) {};
 
         ~Node() {};
     };

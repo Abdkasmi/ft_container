@@ -49,9 +49,9 @@ namespace ft {
             }
 
             RbtIterator operator++(int) { // it++
-                nodePtr* this_tmp = _node;
+                nodePtr* tmp = _node;
                 _node = increment(_node);
-                return (RbtIterator(this_tmp, _end));
+                return (RbtIterator(tmp, _end));
             }
 
             RbtIterator &operator--() { // --it
@@ -60,9 +60,9 @@ namespace ft {
             }
 
             RbtIterator operator--(int) { // it--
-                nodePtr* this_tmp = _node;
+                nodePtr* tmp = _node;
                 _node = decrement(_node);
-                return (RbtIterator(this_tmp, _end));
+                return (RbtIterator(tmp, _end));
             }
 
             nodePtr* getNode() const {
@@ -86,7 +86,7 @@ namespace ft {
                 while (tmp->parent)
                     tmp = tmp->parent;
                 if (node == _end)
-                    return (greatest(tmp));
+                    return (greatest(tmp)); // might just return _end
                 if (node->right == _end)
                 {
                     tmp = node;
@@ -113,18 +113,21 @@ namespace ft {
 
             nodePtr *decrement(nodePtr* node) {
                 nodePtr	*tmp = node;
+
                 while (tmp->parent)
                     tmp = tmp->parent;
-                if (node == _end)
+                if (node == _end) {
                     return (greatest(tmp));
+                }
                 if (node->left == _end)
                 {
                     tmp = node;
                     while (tmp->parent && tmp == tmp->parent->left)
                         tmp = tmp->parent;
                     tmp = tmp->parent;
-                    if (!tmp)
+                    if (!tmp) {
                         return _end;
+                    }
                     return tmp;
                 }
                 tmp = node->left;

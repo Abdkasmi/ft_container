@@ -52,7 +52,6 @@ namespace ft {
                 node->parent = parent;
                 node->color = red;
                 node->right = node->left = _end;
-                node->d_black = false;
                 return node;
             }
 
@@ -80,80 +79,83 @@ namespace ft {
             nodePtr tmp = this->root;
 
             while (tmp != _end) {
-                if (this->comp(tmp->value.first, val)) { // val bigger
-                    if (tmp->right == _end)
-                        return tmp;
+                if (this->comp(tmp->value.first, val) && tmp->right) { // val bigger
                     tmp = tmp->right;
-                } else if (this->comp(val, tmp->value.first)) { // val smaller
-                    if (tmp->left == _end)
-                        return tmp;
+                } else if (this->comp(val, tmp->value.first) && tmp->left) { // val smaller
                     tmp = tmp->left;
                 }
+                else if (this->comp(val, tmp->value.first) == false && this->comp(tmp->value.first, val) == false) //equal
+                    break;
                 else
-                    return tmp;
+                    tmp = _end;
             }
             return tmp;
         }
 
             nodePtr    insert(const value_type& val) {
-                nodePtr to_find = this->search_(val.first);
+                nodePtr node = root;
+                nodePtr parent = NULL;
 
-                if (to_find != _end && to_find->value.first == val.first) {
-                    to_find->d_black = true;
-                    return to_find;
+                while (node != _end) {
+                    parent = node;
+                    if (this->comp(val.first, node->value.first))
+                        node = node->left;
+                    else if (this->comp(node->value.first, val.first))
+                        node = node->right;
+                    else
+                        return _end;
                 }
-                if (this->root == _end) {
-                    this->root = this->NewNode(val, NULL);
-                    this->root->color = black;
-                    this->size++;
-                    update_end();
-                    return (root);
-                }
-                if (this->comp(to_find->value.first, val.first)) {
-                    to_find->right = this->NewNode(val, to_find);
-                    to_find = this->insert_balance(to_find->right);
-                }
-                else if (this->comp(val.first, to_find->value.first)) {
-                    to_find->left = this->NewNode(val, to_find);
-                    to_find = this->insert_balance(to_find->left);
-                }
+                nodePtr to_insert = NewNode(val, NULL);
+                if (parent == NULL) // root father -> NULL
+                    root = to_insert;
+                else if (this->comp(val.first, parent->value.first))
+                    parent->left = to_insert;
+                else
+                    parent->right = to_insert;
+                to_insert->parent = parent;
                 this->size++;
                 update_end();
-                return to_find;
+                insert_balance(to_insert);
+                return to_insert;
             }
 
-            nodePtr  insert_balance(nodePtr val) {
-                if (val == this->root || val->parent->color == black) {
-                    return val;
+            void insert_balance(nodePtr val) {
+                nodePtr parent = val->parent;
+
+                if (parent == NULL) // root father -> NULL
+                    return ;
+                if (parent->color == black)
+                    return ;
+                nodePtr grandparent = parent->parent;
+                if (grandparent == NULL) {
+                    parent->color = black;
+                    return;
                 }
-                nodePtr uncle = getUncle(val);
-                if (uncle != _end && uncle->color == red) {
-                    switch_color(uncle);
-                    switch_color(val->parent);
-                    if (val->parent->parent != this->root)
-                        switch_color(val->parent->parent);
-                    insert_balance(val->parent->parent);
+                nodePtr uncle = getUncle(parent);
+                if (uncle != _end && uncle->color) {
+                    parent->color = black;
+                    grandparent->color = red;
+                    uncle->color = black;
+                    insert_balance(grandparent);
+                }
+                else if (parent == grandparent->left) {
+                    if (val == parent->right) {
+                        left_rotation(parent);
+                        parent = val;
+                    }
+                    right_rotation(grandparent);
+                    parent->color = black;
+                    grandparent->color = red;
                 }
                 else {
-                    nodePtr parent = val->parent;
-                    nodePtr grandparent = parent->parent;
-                    if (!rotate_check(val, parent, grandparent)) {
-                        if (parent->left == val)
-                            right_rotation(val->parent);
-                        else
-                            left_rotation(val->parent);
+                    if (val == parent->left) {
+                        right_rotation(parent);
+                        parent = val;
                     }
-                    if (grandparent->left == parent || grandparent->left == val) {
-                        switch_color(grandparent);
-                        switch_color(grandparent->left);
-                        right_rotation(grandparent);
-                    } else {
-                        switch_color(grandparent);
-                        switch_color(grandparent->right);
-                        left_rotation(grandparent);
-                    }
+                    left_rotation(grandparent);
+                    parent->color = black;
+                    grandparent->color = red;
                 }
-                return val;
             }
 
             void deleteNode(const key_type k) {
@@ -170,27 +172,12 @@ namespace ft {
                     nodePtr inorderSuccessor = findMin(node->right);
                     alloc.destroy(&node->value);
                     alloc.construct(&node->value, inorderSuccessor->value);
-
-//                    nodePtr newN = NewNode(inorderSuccessor->value, node->parent);
-//                    newN->color = node->color;
-//                    if (node->parent && node == node->parent->left)
-//                        node->parent->left = newN;
-//                    else if (node->parent && node == node->parent->right)
-//                        node->parent->right = newN;
-//                    newN->left = node->left;
-//                    newN->right = node->right;
-//                    if (newN->left != _end)
-//                        newN->left->parent = newN;
-//                    if (newN->right != _end)
-//                        newN->right->parent = newN;
-//                    deallocateNode(node);
-
                     delNodeColor = inorderSuccessor->color;
                     moveUp = delZeroOne(inorderSuccessor);
                 }
                 if (delNodeColor == black) {
                     fixRedBlackDelete(moveUp);
-                    if (moveUp != _end) {
+                    if (moveUp != _end && moveUp->nil) {
                         replaceParentChild(moveUp->parent, moveUp, _end);
                     }
                 }
@@ -218,6 +205,7 @@ namespace ft {
                     if (node->color == black) {
                         new_child = this->NewNode(value_type(), node->parent);
                         new_child->color = black;
+                        new_child->nil = true;
                     }
                     else
                         new_child = _end;
@@ -256,8 +244,10 @@ namespace ft {
                     handleRedSibling(node, sibling);
                     sibling = get_sibling(node); // Get new sibling for fall-through to cases 3-6
                 }
+                if (sibling->right == NULL && sibling->left == NULL)
+                    return ;
                 // Cases 3+4: Black sibling with two black children
-                if (isBlack(sibling->left) && isBlack(sibling->right)) {
+                if (sibling->right && sibling->left && isBlack(sibling->left) && isBlack(sibling->right)) {
                     sibling->color = red;
                     // Case 3: Black sibling with two black children + red parent
                     if (node->parent->color == red) {
@@ -323,33 +313,14 @@ namespace ft {
                 }
             }
 
-            void	copy_node(nodePtr a, nodePtr b)
-            {
-                if (a != root)
-                    a == a->parent->left ? a->parent->left = b : a->parent->right = b;
-                else
-                    root = b;
-                b->parent = a->parent;
-                b->left = a->left;
-                b->right = a->right;
-                if (b->left != _end)
-                    b->left->parent = b;
-                if (b->right != _end)
-                    b->right->parent = b;
-                b->color = a->color;
-                alloc.destroy(&a->value);
-                p_alloc.deallocate(a, 1);
-                a = _end;
-            }
-
-
             nodePtr getUncle(nodePtr node) const {
-                if (node == this->root || node->parent == this->root || node == _end)
-                        return _end;
-                if (node->parent == node->parent->parent->left)
-                    return node->parent->parent->right;
+                nodePtr grandparent = node->parent;
+                if (grandparent->left == node)
+                    return grandparent->right;
+                else if (grandparent->right == node)
+                    return grandparent->left;
                 else
-                    return node->parent->parent->left;
+                    return _end;
             }
 
             size_t getSize() const {
@@ -359,21 +330,6 @@ namespace ft {
             nodePtr getEnd() const
             {
                 return _end;
-            }
-            void	switch_color(nodePtr node)
-            {
-                if (!node || node == this->end())
-                    return ;
-                if (node->color == black)
-                    node->color = red;
-                else
-                    node->color = black;
-            }
-
-            bool    rotate_check(nodePtr node, nodePtr parent, nodePtr grandpa) const  {
-                if ((grandpa->left == parent && parent->left == node) || (grandpa->right == parent && parent->right == node))
-                    return (true);
-                return (false);
             }
 
             void left_rotation(nodePtr p_val) {
@@ -444,19 +400,8 @@ namespace ft {
                 }
             }
 
-            nodePtr getSuccessor(nodePtr node) { // get the inorder successor
-                nodePtr curr = node->right;
-                while (curr->left)
-                    curr = curr->left;
-                return curr;
-            }
-
             nodePtr getRoot() const {
                 return this->root;
-            }
-
-            void setRoot(nodePtr tmp) {
-                this->root = tmp;
             }
 
             nodePtr findMin(nodePtr cur) const{
