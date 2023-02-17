@@ -181,7 +181,9 @@ namespace ft {
 		*/
 
 		mapped_type&	operator[](const key_type& k) {
-			return (((this->insert(ft::make_pair(k,mapped_type()))).first->second));
+            pair<iterator, bool> tmp = this->insert(ft::make_pair(k,mapped_type()));
+            iterator it = tmp.first;
+            return (it->second);
 		}
 
 		/*
@@ -195,13 +197,15 @@ namespace ft {
 		*/
 
 		pair<iterator, bool> insert(const value_type& val) {
-            iterator	it(_tree.insert(val), _tree.getEnd());
-            if (it.getNode()->d_black)
+            iterator	it(this->find(val.first));
+
+            if (it == end())
             {
-                it.getNode()->d_black = false;
-                return (ft::make_pair(it, false));
+                _tree.insert(val);
+                iterator ret(this->find(val.first));
+                return (ft::make_pair(ret, true));
             }
-            return (ft::make_pair(it, true));
+            return (ft::make_pair(it, false));
 		}
 
 		iterator insert(iterator position, const value_type& val) {
@@ -233,28 +237,18 @@ namespace ft {
 		}
 
 		void	erase(iterator first, iterator last) {
-//			while (first != last) {
-//                iterator tmp = first;
-//                ++first;
-//                erase(tmp);
-//            }
             iterator tmp = first;
             size_type i = 0;
             while (tmp != last) {
                 ++tmp;
                 ++i;
             }
-            while (i > 0) { // fix derniere decrementation + affichage que des 2 derniers elements de l'arbre
+            while (i > 0) {
                 tmp = last;
-                std::cout << "i : " << i << std::endl;
-                size_type j = 0;
-                while (j < i){
-                    std::cout << tmp->first << std::endl;
+                size_type j = -1;
+                while (++j < i){
                     --tmp;
-                    ++j;
-                    std::cout << tmp->first << std::endl;
                 }
-                std::cout << "to erase : " << tmp->first << std::endl;
                 erase(tmp);
                 --i;
             }
