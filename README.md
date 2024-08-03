@@ -11,4 +11,3 @@ The project includes the following containers :
 - Vector
 - Map
 - Stack
-- Queue
